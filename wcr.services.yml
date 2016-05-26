@@ -1,0 +1,14 @@
+services:
+
+  # Event subscribers.
+#  refreshless.html_response.subscriber:
+#    class: Drupal\refreshless\EventSubscriber\HtmlResponseSubscriber
+#    arguments: ['@refreshless.page_state']
+#    tags:
+#      - { name: event_subscriber }
+
+  main_content_renderer.webcomponent:
+    class: Drupal\wcr\Render\MainContent\WebComponentRender
+    arguments: ['@main_content_renderer.html']
+    tags:
+      - { name: render.main_content_renderer, format: drupal_webcomponent }
