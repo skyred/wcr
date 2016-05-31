@@ -1,8 +1,7 @@
-name: Web Component Renderer
+name: 'Web Component Renderer'
 type: module
 description: 'Renders a part of a page as web component'
-# version: VERSION
-# core: 8.x
+core: 8.x
 dependencies:
   - drupal:system (>=8.1.x)
 
