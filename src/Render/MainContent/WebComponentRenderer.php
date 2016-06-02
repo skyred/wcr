@@ -60,8 +60,8 @@ class WebComponentRenderer implements MainContentRendererInterface {
 
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
-
-    \kint($this->renderer->renderRoot($page['content']['polymer_page_title']));
+    $this->renderer->renderRoot($page['content']);
+    \kint($page);
 
     \kint(BubbleableMetadata::createFromRenderArray($page['content']['polymer_page_title']));
 

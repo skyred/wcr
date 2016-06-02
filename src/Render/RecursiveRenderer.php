@@ -3,6 +3,7 @@
 namespace Drupal\wcr\Render;
 
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Render\RenderContext;
 
 /**
  * Class RecursiveRenderer
@@ -10,7 +11,24 @@ use Drupal\Core\Render\Renderer;
  * Override the Renderer in core to leave recursive structure in render array.
  */
 class RecursiveRenderer extends Renderer {
-  protected function doRenderReturnArray(&$elements, $is_root_call = FALSE) {
+  public function renderRoot(&$elements) {
+    // Disallow calling ::renderRoot() from within another ::renderRoot() call.
+    if ($this->isRenderingRoot) {
+      $this->isRenderingRoot = FALSE;
+      throw new \LogicException('A stray renderRoot() invocation is causing bubbling of attached assets to break.');
+    }
+
+    // Render in its own render context.
+    $this->isRenderingRoot = TRUE;
+    $output = $this->executeInRenderContext(new RenderContext(), function() use (&$elements) {
+      return $this->render($elements, TRUE);
+    });
+    $this->isRenderingRoot = FALSE;
+
+    return $elements;
+  }
+
+ /*protected function doRender(&$elements, $is_root_call = FALSE) {
     if (empty($elements)) {
       return '';
     }
@@ -359,5 +377,5 @@ class RecursiveRenderer extends Renderer {
 
     $elements['#printed'] = TRUE;
     return $elements['#markup'];
-  }
+  }*/
 }
