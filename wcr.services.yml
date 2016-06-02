@@ -12,3 +12,7 @@ services:
     arguments: ['@main_content_renderer.html']
     tags:
       - { name: render.main_content_renderer, format: drupal_webcomponent }
+
+  recursive_renderer:
+    class: Drupal\wcr\Render\RecursiveRenderer
+    arguments: ['@controller_resolver', '@theme.manager', '@plugin.manager.element_info', '@render_placeholder_generator', '@render_cache', '@request_stack', '%renderer.config%']

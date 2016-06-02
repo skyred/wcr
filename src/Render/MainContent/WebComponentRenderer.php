@@ -12,6 +12,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InsertCommand;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\MainContent\MainContentRendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -39,7 +40,7 @@ class WebComponentRenderer implements MainContentRendererInterface {
      */
   public function __construct(MainContentRendererInterface $html_renderer) {
     $this->htmlRenderer = $html_renderer;
-    $this->renderer = \Drupal::service('renderer');
+    $this->renderer = \Drupal::service('recursive_renderer');
   }
 
 
@@ -49,13 +50,21 @@ class WebComponentRenderer implements MainContentRendererInterface {
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
 /*    if (!$this->validatePreconditions($request)) {
       throw new PreconditionFailedHttpException();
-    }
+    }*/
 
-    list($page, $title) = $this->htmlRenderer->prepare($main_content, $request, $route_match);*/
+    list($page, $title) = $this->htmlRenderer->prepare($main_content, $request, $route_match);
 
     //  a Symfony response object
+
+    $partials_required= $request->get("templates");
+
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
+
+    \kint($this->renderer->renderRoot($page['content']['polymer_page_title']));
+
+    \kint(BubbleableMetadata::createFromRenderArray($page['content']['polymer_page_title']));
+
     $response->headers->set('Content-Type', 'text/html');
 
     $response->setContent("OK");
