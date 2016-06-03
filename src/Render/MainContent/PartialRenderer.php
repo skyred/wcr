@@ -64,7 +64,7 @@ class PartialRenderer implements MainContentRendererInterface {
     // Kint the processed render array
     \kint($page);
 
-    \kint(BubbleableMetadata::createFromRenderArray($page['content']['polymer_page_title']));
+    \kint(BubbleableMetadata::createFromRenderArray($page['content']));
 
 
     $response->headers->set('Content-Type', 'text/html');
