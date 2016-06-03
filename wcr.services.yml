@@ -7,11 +7,11 @@ services:
 #    tags:
 #      - { name: event_subscriber }
 
-  main_content_renderer.webcomponent:
-    class: Drupal\wcr\Render\MainContent\WebComponentRenderer
+  main_content_renderer.partial:
+    class: Drupal\wcr\Render\MainContent\PartialRenderer
     arguments: ['@main_content_renderer.html']
     tags:
-      - { name: render.main_content_renderer, format: drupal_webcomponent }
+      - { name: render.main_content_renderer, format: drupal_partial }
 
   recursive_renderer:
     class: Drupal\wcr\Render\RecursiveRenderer

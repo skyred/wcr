@@ -2,6 +2,12 @@
 
 namespace Drupal\wcr\Render;
 
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Render\RenderContext;
 
@@ -28,7 +34,7 @@ class RecursiveRenderer extends Renderer {
     return $elements;
   }
 
- /*protected function doRender(&$elements, $is_root_call = FALSE) {
+ protected function doRender(&$elements, $is_root_call = FALSE) {
     if (empty($elements)) {
       return '';
     }
@@ -335,7 +341,7 @@ class RecursiveRenderer extends Renderer {
     $prefix = isset($elements['#prefix']) ? $this->xssFilterAdminIfUnsafe($elements['#prefix']) : '';
     $suffix = isset($elements['#suffix']) ? $this->xssFilterAdminIfUnsafe($elements['#suffix']) : '';
 
-    $elements['#markup'] = Markup::create($prefix . $elements['#children']['#markup'] . $suffix);
+    $elements['#markup'] = Markup::create($prefix . $elements['#children'] . $suffix);
 
     // We've rendered this element (and its subtree!), now update the context.
     $context->update($elements);
@@ -377,5 +383,5 @@ class RecursiveRenderer extends Renderer {
 
     $elements['#printed'] = TRUE;
     return $elements['#markup'];
-  }*/
+  }
 }
