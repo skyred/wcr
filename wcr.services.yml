@@ -18,3 +18,5 @@ services:
     arguments: ['@controller_resolver', '@theme.manager', '@plugin.manager.element_info', '@render_placeholder_generator', '@render_cache', '@request_stack', '%renderer.config%']
 
 
+  wcr.callstack:
+    class: Drupal\wcr\Renderer\CallStack
