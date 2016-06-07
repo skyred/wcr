@@ -43,7 +43,7 @@ class PartialRenderer implements MainContentRendererInterface {
   public function __construct(MainContentRendererInterface $html_renderer) {
     $this->htmlRenderer = $html_renderer;
     // Modified version of the core "renderer" service
-    $this->renderer = \Drupal::service('recursive_renderer');
+    $this->renderer = \Drupal::service('renderer');
   }
 
   /**
@@ -51,21 +51,26 @@ class PartialRenderer implements MainContentRendererInterface {
    */
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
 
+    /*
     list($page, $title) = $this->htmlRenderer->prepare($main_content, $request, $route_match);
 
     // URL parameters
     $partials_required= $request->get("templates");
+    */
 
     //  We use a Symfony response object to have complete control over the response.
     $response = new Response();
-    $response->setStatusCode(Response::HTTP_OK);
-    $this->renderer->renderRoot($page);
+    $response->setStatusCode(Response::HTTP_OK); /*
+    $this->renderer->renderRoot($page['content']['polymer_content']);
 
     // Kint the processed render array
     \kint($page);
 
-    \kint(BubbleableMetadata::createFromRenderArray($page['content']));
+    \kint(BubbleableMetadata::createFromRenderArray($page));
+    */
 
+    $this->renderer->renderRoot($main_content);
+    \kint($main_content);
 
     $response->headers->set('Content-Type', 'text/html');
     $response->setContent("OK");

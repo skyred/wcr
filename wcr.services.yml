@@ -13,6 +13,8 @@ services:
     tags:
       - { name: render.main_content_renderer, format: drupal_partial }
 
-  recursive_renderer:
-    class: Drupal\wcr\Render\RecursiveRenderer
+  trackable_renderer:
+    class: Drupal\wcr\Render\TrackableRenderer
     arguments: ['@controller_resolver', '@theme.manager', '@plugin.manager.element_info', '@render_placeholder_generator', '@render_cache', '@request_stack', '%renderer.config%']
+
+
