@@ -28,6 +28,7 @@ class TrackableRenderer extends Renderer {
       'element' => $elements,
     ));
     parent::doRender($elements, $is_root_call);
+    debug(\Drupal::service("wcr.callstack")->printStack());
     \Drupal::service("wcr.callstack")->pop();
   }
 }

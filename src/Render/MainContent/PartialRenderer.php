@@ -73,7 +73,7 @@ class PartialRenderer implements MainContentRendererInterface {
     \kint($main_content);
 
     $response->headers->set('Content-Type', 'text/html');
-    $response->setContent("OK");
+    $response->setContent("OK" . \Drupal::service('wcr.callstack')->printTree());
     return $response;
   }
 
