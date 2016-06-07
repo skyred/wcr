@@ -1,17 +1,31 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: ztl8702
- * Date: 7/06/16
- * Time: 12:35 PM
+ * Contains Drupal/wcr/CallStack
+ *
+ * This class, when used as a service, serves as a tracker of the call stack
+ * in the rendering process.
+ *
+ * Currently, every call to the doRender() function will results in a record
+ * in this "CallStack". Other functions could be added later.
+ *
+ * The class also tracks the relationship between each function call by
+ * building a "tree" structure of function calls.
  */
 
 namespace Drupal\wcr;
 
 
 class CallStack {
+  /**
+   * Variables for the stack
+   */
   private $count;
   private $stack;
+
+
+  /**
+   * Variables for the tree structure (to be converted to OOP)
+   */
   private $treeNodes;
   private $treeChildren;
   private $treeParent;
@@ -34,6 +48,7 @@ class CallStack {
     $this->count ++;
     $this->stack[] = $element;
 
+    // Add this element in the tree
     $this->treeCount++;
     $this->treeNodes[$this->treeCount-1]=$element;
     $this->treeParent[$this->treeCount-1] = $this->treeNow;
@@ -43,13 +58,16 @@ class CallStack {
       }
       $this->treeChildren[$this->treeNow][] = $this->treeCount-1;
     }
+    // Move tree pointer to current function call (tracking relationship)
     $this->treeNow=$this->treeCount-1;
   }
 
   public function pop() {
+    // Pop out the top item in the stack
     array_pop($this->stack);
     $this->count --;
 
+    // Restore tree pointer to its parent node
     $this->treeNow = $this->treeParent[$this->treeNow];
   }
 
