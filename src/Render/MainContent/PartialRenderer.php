@@ -71,9 +71,9 @@ class PartialRenderer implements MainContentRendererInterface {
 
     $this->renderer->renderRoot($main_content);
     \kint($main_content);
-
+    \kint( \Drupal::service('wcr.callstack')->printTree(0));
     $response->headers->set('Content-Type', 'text/html');
-    $response->setContent("OK" . \Drupal::service('wcr.callstack')->printTree());
+    $response->setContent("OK". \Drupal::service('wcr.callstack')->getTreeCount());
     return $response;
   }
 

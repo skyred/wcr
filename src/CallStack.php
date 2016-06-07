@@ -70,8 +70,17 @@ class CallStack {
   }
 
 
-  public function printTree() {
-    return "Tree Count". $this->treeCount;
+  public function printTree($treeNodeID) {
+    $currentNode = $this->treeNodes[$treeNodeID];
+    $currentNode['children']=[];
+    foreach ($this->treeChildren[$treeNodeID] as $child) {
+      $currentNode['children'][] = $this->printTree($child);
+    }
+    return $currentNode;
   }
 
+  public function getTreeCount()
+  {
+    return $this->treeCount;
+  }
 }
