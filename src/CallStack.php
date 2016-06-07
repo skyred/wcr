@@ -32,16 +32,16 @@ class CallStack {
 
   public function append($element) {
     $this->count ++;
-    $this->stack[]=$element;
+    $this->stack[] = $element;
 
     $this->treeCount++;
     $this->treeNodes[$this->treeCount-1]=$element;
     $this->treeParent[$this->treeCount-1] = $this->treeNow;
-    if (! $this->treeNow == -1) {
+    if ( $this->treeNow != -1) {
       if (!isset($this->treeChildren[$this->treeNow])){
         $this->treeChildren[$this->treeNow]=array();
       }
-      $this->treeChildren[$this->treeNow][]=$this->treeCount-1;
+      $this->treeChildren[$this->treeNow][] = $this->treeCount-1;
     }
     $this->treeNow=$this->treeCount-1;
   }

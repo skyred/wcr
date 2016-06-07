@@ -68,12 +68,20 @@ class PartialRenderer implements MainContentRendererInterface {
 
     \kint(BubbleableMetadata::createFromRenderArray($page));
     */
-
+    \Drupal::service('wcr.callstack')->append(["func" => "renderResponse"]);
     $this->renderer->renderRoot($main_content);
+    \Drupal::service('wcr.callstack')->pop();
+
     \kint($main_content);
-    \kint( \Drupal::service('wcr.callstack')->printTree(0));
+   // \kint( );
+
+    $debug_result = \Drupal::service('wcr.callstack')->printTree(0);
+    $debug_string = \json_encode($debug_string);
+    $file_return = file_save_data($debug_string);
+    \kint($file_return->getFileUri());
+
     $response->headers->set('Content-Type', 'text/html');
-    $response->setContent("OK". \Drupal::service('wcr.callstack')->getTreeCount());
+    $response->setContent("OK"."Stack ". \Drupal::service('wcr.callstack')->getCount() . " Tree ".\Drupal::service('wcr.callstack')->getTreeCount());
     return $response;
   }
 
