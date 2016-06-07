@@ -17,8 +17,17 @@ use Drupal\Core\Render\RenderContext;
  * Override the Renderer in core to leave recursive structure in render array.
  */
 class TrackableRenderer extends Renderer {
-  
- protected function doRender(&$elements, $is_root_call = FALSE) {
+
+  /**
+   * @param $elements
+   * @param bool $is_root_call
+   */
+  protected function doRender(&$elements, $is_root_call = FALSE) {
+    \Drupal::service("wcr.callstack")->append(array(
+      'func' => 'doRender',
+      'element' => $elements,
+    ));
     parent::doRender($elements, $is_root_call);
+    \Drupal::service("wcr.callstack")->pop();
   }
 }

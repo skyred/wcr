@@ -19,4 +19,4 @@ services:
 
 
   wcr.callstack:
-    class: Drupal\wcr\Renderer\CallStack
+    class: Drupal\wcr\CallStack
