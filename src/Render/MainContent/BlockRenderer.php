@@ -16,7 +16,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\MainContent\MainContentRendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-
+use Drupal\Core\Cache\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
@@ -50,17 +50,12 @@ class BlockRenderer implements MainContentRendererInterface {
    * {@inheritdoc}
    */
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
-
+    // URL parameter
+    $block_requested = $request->get("block");
 
     list($page, $title) = $this->htmlRenderer->prepare($main_content, $request, $route_match);
 
-    // URL parameters
-    //$partials_required= $request->get("templates");
-
-
-    //  We use a Symfony response object to have complete control over the response.
-    $response = new Response();
-    $response->setStatusCode(Response::HTTP_OK);
+    $page_attachments = $page['#attached'];
 
     $blocks = [];
     $regions = \Drupal::theme()->getActiveTheme()->getRegions();
@@ -68,7 +63,7 @@ class BlockRenderer implements MainContentRendererInterface {
       if (!empty($page[$region])) {
         foreach ($page[$region] as $key => $child) {
           if (substr($key,0,1) != '#') {
-            $blocks[] = array (
+            $blocks[$region .'/' .$key] = array (
               "id" => $region .'/' .$key,
               "render_array" => $child,
             );
@@ -77,20 +72,56 @@ class BlockRenderer implements MainContentRendererInterface {
 
       }
     }
-
-
     foreach ($blocks as &$block) {
       $block['markup'] = $this->renderer->renderRoot($block['render_array']);
     }
 
-    \kint($blocks);
+    $this->renderer->renderRoot($page);
+    $page_attachments = $page['#attached'];
+
+    if (empty($block_requested)) {
+      // List Mode
+
+      //  We use a Symfony response object to have complete control over the response.
+      $response = new Response();
+      $response->setStatusCode(Response::HTTP_OK);
+
+      \kint($blocks);
+
+      $debug_string = \json_encode($blocks);
+
+      $response->headers->set('Content-Type', 'text/html');
+      $response->setContent("OK");
+      return $response;
+    } else {
+      //Render Mode
+      $block_to_render = $blocks[$block_requested];
+      if (!empty($block_to_render)) {
+        $render_array = $block_to_render['render_array'];
+        $render_array = $this->renderer->mergeBubbleableMetadata($render_array, $page_attachments);
+        $html = [
+          '#type' => 'html',
+          'page' => $render_array,
+          '#attached'=> $page_attachments,
+        ];
+        $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
+        $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url" ]); //url.query_args
+
+        $html ['#cache']['tags'][] = 'rendered';
+        $this->renderer->renderRoot($html);
+        $response = new HtmlResponse($html, 200, [
+          'Content-Type' => 'text/html; charset=UTF-8',
+        ]);
+        return $response;
+      }
+      else {
+        $response = new Response();
+        $response->setStatusCode(Response::HTTP_NOT_FOUND);
+        return $response;
+      }
+    }
 
 
-    $debug_string = \json_encode($blocks);
-
-    $response->headers->set('Content-Type', 'text/html');
-    $response->setContent("OK");
-    return $response;
   }
 
 
