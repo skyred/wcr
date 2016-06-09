@@ -86,9 +86,13 @@ class BlockRenderer implements MainContentRendererInterface {
       $response = new Response();
       $response->setStatusCode(Response::HTTP_OK);
 
-      \kint($blocks);
+      $debug = [];
+      foreach ($blocks as $block) {
+        $debug[] = $block['id'];
+      }
 
-      $debug_string = \json_encode($blocks);
+      \kint($debug);
+
 
       $response->headers->set('Content-Type', 'text/html');
       $response->setContent("OK");
