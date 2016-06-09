@@ -1,0 +1,4 @@
+wcr.contextual_links:
+  title: 'Export block'
+  route_name: 'wcr.export_block'
+  group: 'block'

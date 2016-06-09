@@ -76,7 +76,7 @@ class PartialRenderer implements MainContentRendererInterface {
    // \kint( );
 
     $debug_result = \Drupal::service('wcr.callstack')->printTree(0);
-    $debug_string = \json_encode($debug_string);
+    $debug_string = \json_encode($debug_result);
     $file_return = file_save_data($debug_string);
     \kint($file_return->getFileUri());
 
