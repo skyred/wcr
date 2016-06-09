@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  *
  * Currently it only prints debug info.
  */
-class PartialRenderer implements MainContentRendererInterface {
+class BlockRenderer implements MainContentRendererInterface {
 
 
   /**
@@ -39,7 +39,7 @@ class PartialRenderer implements MainContentRendererInterface {
   /**
    * WebComponentRenderer constructor.
    * @param MainContentRendererInterface $html_renderer
-     */
+   */
   public function __construct(MainContentRendererInterface $html_renderer) {
     $this->htmlRenderer = $html_renderer;
     // Modified version of the core "renderer" service
@@ -51,37 +51,45 @@ class PartialRenderer implements MainContentRendererInterface {
    */
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
 
-    /*
+
     list($page, $title) = $this->htmlRenderer->prepare($main_content, $request, $route_match);
 
     // URL parameters
-    $partials_required= $request->get("templates");
-    */
+    //$partials_required= $request->get("templates");
+
 
     //  We use a Symfony response object to have complete control over the response.
     $response = new Response();
-    $response->setStatusCode(Response::HTTP_OK); /*
-    $this->renderer->renderRoot($page['content']['polymer_content']);
+    $response->setStatusCode(Response::HTTP_OK);
 
-    // Kint the processed render array
-    \kint($page);
+    $blocks = [];
+    $regions = \Drupal::theme()->getActiveTheme()->getRegions();
+    foreach ($regions as $region) {
+      if (!empty($page[$region])) {
+        foreach ($page[$region] as $key => $child) {
+          if (substr($key,0,1) != '#') {
+            $blocks[] = array (
+              "id" => $region .'/' .$key,
+              "render_array" => $child,
+            );
+          }
+        }
 
-    \kint(BubbleableMetadata::createFromRenderArray($page));
-    */
-    \Drupal::service('wcr.callstack')->append(["func" => "renderResponse"]);
-    $this->renderer->renderRoot($main_content);
-    \Drupal::service('wcr.callstack')->pop();
+      }
+    }
 
-    \kint($main_content);
-   // \kint( );
 
-    $debug_result = \Drupal::service('wcr.callstack')->printTree(0);
-    $debug_string = \json_encode($debug_result);
-    $file_return = file_save_data($debug_string);
-    \kint($file_return->getFileUri());
+    foreach ($blocks as &$block) {
+      $block['markup'] = $this->renderer->renderRoot($block['render_array']);
+    }
+
+    \kint($blocks);
+
+
+    $debug_string = \json_encode($blocks);
 
     $response->headers->set('Content-Type', 'text/html');
-    $response->setContent("OK"."Stack ". \Drupal::service('wcr.callstack')->getCount() . " Tree ".\Drupal::service('wcr.callstack')->getTreeCount());
+    $response->setContent("OK");
     return $response;
   }
 
