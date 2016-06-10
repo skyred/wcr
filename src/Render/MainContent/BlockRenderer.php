@@ -102,7 +102,7 @@ class BlockRenderer implements MainContentRendererInterface {
         $render_array = $block_to_render['render_array'];
         $render_array = $this->renderer->mergeBubbleableMetadata($render_array, $page_attachments);
         $html = [
-          '#type' => 'html',
+          '#type' => 'wcrhtml',
           'page' => $render_array,
           '#attached'=> $page_attachments,
         ];
