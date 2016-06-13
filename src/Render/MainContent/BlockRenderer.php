@@ -165,9 +165,8 @@ class BlockRenderer implements MainContentRendererInterface {
 
       // Use a custom wrapper instead of `html` theme hook.
       $html = [
-        '#type' => 'wcrhtml',
+        '#type' => 'bodyonly',
         'page' => $render_array,
-        '#attached'=> $this->page_attachments,
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
