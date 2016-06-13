@@ -33,7 +33,7 @@
         getBlock(url,block, function(r){
             shadowRoot = target.createShadowRoot();
             shadowRoot.innerHTML = r["attachments"]["styles"]+r["attachments"]["scripts"] + r["content"] + r["attachments"]["scripts_bottom"];
-            console.log(r.st)
+           // console.log(r.st)
         });
     }
 

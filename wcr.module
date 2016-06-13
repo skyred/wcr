@@ -12,6 +12,9 @@ function wcr_theme() {
     'wcrhtml' => [
       'render element' => 'wcrhtml',
     ],
+    "bodyonly" => [
+      'render element' => 'bodyonly',
+    ],
   ];
 }
 
