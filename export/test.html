@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+</head>
+<body>
+<div>
+    <div id="host3"></div>
+</div>
+
+ <div id="host"></div>
+ <div id="host2"></div>
+<script type="text/javascript" src="ExportBlock.js"></script>
+<script>
+    ExportBlocks.attachShadowDOM(document.querySelector("#host3"),'/','main_menu/integrity_branding');
+    ExportBlocks.attachShadowDOM(document.querySelector("#host"),'/','content/integrity_content');
+    ExportBlocks.attachShadowDOM(document.querySelector("#host2"),'/','main_menu/integrity_main_menu');
+
+
+</script>
+</body>
+</html>

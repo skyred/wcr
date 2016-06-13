@@ -34,6 +34,7 @@ class BlockRenderer implements MainContentRendererInterface {
    *
    * @var \Drupal\Core\Render\AttachmentsResponseProcessorInterface
    */
+  protected static $htmlHeadAttachmentTypes = ['html_head', 'feed', 'html_head_link'];
   protected $htmlRenderer;
 
   protected $blocks;
@@ -43,11 +44,12 @@ class BlockRenderer implements MainContentRendererInterface {
   /**
    * WebComponentRenderer constructor.
    * @param MainContentRendererInterface $html_renderer
+   * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $html_response_attachments_processor
    */
-  public function __construct(MainContentRendererInterface $html_renderer) {
+  public function __construct(MainContentRendererInterface $html_renderer, AttachmentsResponseProcessorInterface $html_response_attachments_processor) {
     $this->htmlRenderer = $html_renderer;
     $this->renderer = \Drupal::service('renderer');
-
+    $this->htmlResponseAttachmentsProcessor = $html_response_attachments_processor;
     $this->blocks = [];
   }
 
@@ -87,7 +89,7 @@ class BlockRenderer implements MainContentRendererInterface {
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
     // Process URL parameters.
     $block_requested = $request->get("block");
-    $is_REST = $request->getContentType() == "application/json";
+    $is_REST = $request->getContentType() == "json";
     // Prepare.
     $this->prepare($main_content, $request, $route_match);
 
@@ -173,10 +175,18 @@ class BlockRenderer implements MainContentRendererInterface {
 
       $html ['#cache']['tags'][] = 'rendered';
 
+
+   //   $html_head_attachments = array_intersect_key($this->page_attachments, array_flip(static::$htmlHeadAttachmentTypes));
+     // if (!empty($html_head_attachments)) {
+        $head = $this->renderAttachments($this->page_attachments);
       //
       $this->renderer->renderRoot($html);
-      $response = new AjaxResponse($html, 200, [
-        'Content-Type' => 'text/html; charset=UTF-8',
+      $response = new AjaxResponse([
+        "content" => $html["#markup"],
+        "attachments" => $head,
+      ], 200, [
+        'Content-Type' => 'application/json; charset=UTF-8',
+        'Access-Control-Allow-Origin' => '*',
       ]);
       return $response;
     }
@@ -188,5 +198,25 @@ class BlockRenderer implements MainContentRendererInterface {
     }
   }
 
-
+  protected function renderAttachments(array $html_attachments) {
+    // @See template_preprocess_html().
+    $types = [
+      'styles' => 'css',
+      'scripts' => 'js',
+      'scripts_bottom' => 'js-bottom',
+      'head' => 'head',
+    ];
+    $placeholder_token = Crypt::randomBytesBase64(55);
+    $result = [];
+    foreach ($types as $type => $placeholder_name) {
+      $placeholder = '<' . $placeholder_name . '-placeholder token="' . $placeholder_token . '">';
+      $html_attachments['html_response_attachment_placeholders'][$type] = $placeholder;
+      $response = new HtmlResponse();
+      $response->setContent($placeholder);
+      $response->setAttachments($html_attachments);
+      $response = $this->htmlResponseAttachmentsProcessor->processAttachments($response);
+      $result[$type] = $response->getContent();
+    }
+    return $result;
+  }
 }
