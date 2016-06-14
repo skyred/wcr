@@ -26,12 +26,12 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
 ```
  - In `<head>` also import the element for the block:
 ```
-<link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fbartik_content&element_name=bartik_content"></link>
+<link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fbartik_content&element_name=bartik-content"></link>
 <!-- Will simplify this to only one argument -->
 ```
  - In `<body>` of your static page, use the element you just imported:
 ```
-<bartik_content></bartik_content> 
+<bartik-content></bartik-content> 
 ```
 
 ### Limitations
