@@ -1,6 +1,7 @@
 <?php
 /**
- * Contains Drupal/wcr/CallStack
+ * @file
+ * Contains Drupal/wcr/CallStack.
  *
  * This class, when used as a service, serves as a tracker of the call stack
  * in the rendering process.
@@ -32,10 +33,12 @@ class CallStack {
   private $treeCount;
   private $treeNow;
 
+  /**
+   * CallStack constructor.
+   */
   public function __construct() {
     $this->count = 0;
     $this->stack = array();
-
 
     $this->treeNodes = array();
     $this->treeParent = array();
@@ -44,22 +47,26 @@ class CallStack {
     $this->treeNow = -1;
   }
 
+  /**
+   * Append a new record in the callstack and the tree.
+   * @param $element
+   */
   public function append($element) {
     $this->count ++;
     $this->stack[] = $element;
 
     // Add this element in the tree
     $this->treeCount++;
-    $this->treeNodes[$this->treeCount-1]=$element;
-    $this->treeParent[$this->treeCount-1] = $this->treeNow;
+    $this->treeNodes[$this->treeCount - 1] = $element;
+    $this->treeParent[$this->treeCount - 1] = $this->treeNow;
     if ( $this->treeNow != -1) {
       if (!isset($this->treeChildren[$this->treeNow])){
-        $this->treeChildren[$this->treeNow]=array();
+        $this->treeChildren[$this->treeNow] = array();
       }
-      $this->treeChildren[$this->treeNow][] = $this->treeCount-1;
+      $this->treeChildren[$this->treeNow][] = $this->treeCount - 1;
     }
     // Move tree pointer to current function call (tracking relationship)
-    $this->treeNow=$this->treeCount-1;
+    $this->treeNow = $this->treeCount - 1;
   }
 
   public function pop() {
@@ -72,7 +79,7 @@ class CallStack {
   }
 
   public function getLast() {
-    return $this->stack[$this->count-1];
+    return $this->stack[$this->count - 1];
   }
 
   public function getCount() {
@@ -87,16 +94,26 @@ class CallStack {
     return $str;
   }
 
-
+  /**
+   * Print a tree structure.
+   *
+   * @param $treeNodeID
+   * @return array
+   */
   public function printTree($treeNodeID) {
     $currentNode = $this->treeNodes[$treeNodeID];
-    $currentNode['children']=[];
+    $currentNode['children'] = [];
     foreach ($this->treeChildren[$treeNodeID] as $child) {
       $currentNode['children'][] = $this->printTree($child);
     }
     return $currentNode;
   }
 
+  /**
+   * Get the total number of tree nodes.
+   *
+   * @return int
+   */
   public function getTreeCount()
   {
     return $this->treeCount;

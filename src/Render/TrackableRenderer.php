@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Contains \Drupal\wcr\Render\TrackableRenderer.
+ */
 
 namespace Drupal\wcr\Render;
 

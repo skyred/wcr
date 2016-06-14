@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\refreshless\EventSubscriber\HtmlResponseSubscriber.
+ * Contains \Drupal\wcr\EventSubscriber\HtmlResponseSubscriber.
  */
 
-namespace Drupal\refreshless\EventSubscriber;
+namespace Drupal\wcr\EventSubscriber;
 
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\refreshless\RefreshlessPageState;

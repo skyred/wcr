@@ -7,7 +7,7 @@ use Drupal\Core\Template\Attribute;
  * Implements hook_theme().
  */
 function wcr_theme() {
-  
+
   return [
     'wcrhtml' => [
       'render element' => 'wcrhtml',

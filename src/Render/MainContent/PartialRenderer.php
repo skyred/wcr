@@ -38,8 +38,9 @@ class PartialRenderer implements MainContentRendererInterface {
 
   /**
    * WebComponentRenderer constructor.
+   *
    * @param MainContentRendererInterface $html_renderer
-     */
+   */
   public function __construct(MainContentRendererInterface $html_renderer) {
     $this->htmlRenderer = $html_renderer;
     // Modified version of the core "renderer" service
@@ -56,7 +57,7 @@ class PartialRenderer implements MainContentRendererInterface {
 
     // URL parameters
     $partials_required= $request->get("templates");
-    */
+     */
 
     //  We use a Symfony response object to have complete control over the response.
     $response = new Response();
@@ -67,14 +68,13 @@ class PartialRenderer implements MainContentRendererInterface {
     \kint($page);
 
     \kint(BubbleableMetadata::createFromRenderArray($page));
-    */
+     */
     \Drupal::service('wcr.callstack')->append(["func" => "renderResponse"]);
     $this->renderer->renderRoot($main_content);
     \Drupal::service('wcr.callstack')->pop();
 
     \kint($main_content);
-   // \kint( );
-
+    // \kint( );
     $debug_result = \Drupal::service('wcr.callstack')->printTree(0);
     $debug_string = \json_encode($debug_result);
     $file_return = file_save_data($debug_string);

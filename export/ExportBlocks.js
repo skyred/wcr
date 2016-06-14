@@ -18,7 +18,6 @@
     baseURL = drupalURL;
   }
 
-
   function getBlockURL(block) {
     return baseURL;
   }
@@ -37,7 +36,7 @@
           if (result[media] == undefined) {
             result[media] = [];
           }
-          result[media].push('@import url("' + styleSheetUrl +'");');
+          result[media].push('@import url("' + styleSheetUrl + '");');
         } else if (html[i].tagName == 'STYLE') {
           var media = html[i].media;
           var styleSheetUrls = html[i].textContent;
@@ -94,7 +93,7 @@
                              r["attachments"]["scripts"] +
                              r["content"] +
                              r["attachments"]["scripts_bottom"];
-     // console.log(r.st)
+      // console.log(r.st)
     });
   }
 

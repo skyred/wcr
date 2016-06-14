@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Contains \Drupal\wcr\Element\BodyOnly.
+ */
 
 namespace Drupal\wcr\Element;
 use Drupal\Core\Render\Element\RenderElement;
