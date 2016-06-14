@@ -15,7 +15,7 @@ services:
 
   main_content_renderer.block:
     class: Drupal\wcr\Render\MainContent\BlockRenderer
-    arguments: ['@main_content_renderer.html', '@html_response.attachments_processor']
+    arguments: ['@plugin.manager.display_variant', '@event_dispatcher', '@render_cache', '@html_response.attachments_processor']
     tags:
       - { name: render.main_content_renderer, format: drupal_block }
 
