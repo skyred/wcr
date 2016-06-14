@@ -15,6 +15,9 @@ function wcr_theme() {
     "bodyonly" => [
       'render element' => 'bodyonly',
     ],
+    "polymer" => [
+      'render element' => 'polymer',
+    ],
   ];
 }
 
@@ -135,4 +138,101 @@ function wcr_preprocess_bodyonly(&$variables) {
     unset($variables['bodyonly']['page_bottom']);
   }
 
+}
+
+
+/**
+ * Prepares variables for HTML document templates.
+ *
+ * Default template: html.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - page: A render element representing the page.
+ */
+function wcr_preprocess_polymer(&$variables) {
+  $variables['page'] = $variables['polymer']['page'];
+  unset($variables['polymer']['page']);
+  $variables['element_name'] = $variables['polymer']['#element_name'];
+  unset($variables['polymer']['#element_name']);
+  $variables['page_top'] = NULL;
+  if (isset($variables['polymer']['page_top'])) {
+    $variables['page_top'] = $variables['polymer']['page_top'];
+    unset($variables['polymer']['page_top']);
+  }
+  $variables['page_bottom'] = NULL;
+  if (isset($variables['polymer']['page_bottom'])) {
+    $variables['page_bottom'] = $variables['polymer']['page_bottom'];
+    unset($variables['polymer']['page_bottom']);
+  }
+
+  $variables['html_attributes'] = new Attribute();
+
+  // HTML element attributes.
+  $language_interface = \Drupal::languageManager()->getCurrentLanguage();
+  $variables['html_attributes']['lang'] = $language_interface->getId();
+  $variables['html_attributes']['dir'] = $language_interface->getDirection();
+
+  if (isset($variables['db_is_active']) && !$variables['db_is_active']) {
+    $variables['db_offline'] = TRUE;
+  }
+
+  // Add a variable for the root path. This can be used to create a class and
+  // theme the page depending on the current path (e.g. node, admin, user) as
+  // well as more specific data like path-frontpage.
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+
+  if ($is_front_page) {
+    $variables['root_path'] = FALSE;
+  }
+  else {
+    $system_path = \Drupal::service('path.current')->getPath();
+    $variables['root_path'] = explode('/', $system_path)[1];
+  }
+
+  $site_config = \Drupal::config('system.site');
+  // Construct page title.
+  if (isset($variables['page']['#title']) && is_array($variables['page']['#title'])) {
+    // Do an early render if the title is a render array.
+    $variables['page']['#title'] = (string) \Drupal::service('renderer')->render($variables['page']['#title']);
+  }
+  if (!empty($variables['page']['#title'])) {
+    $head_title = array(
+      // Marking the title as safe since it has had the tags stripped.
+      'title' => Markup::create(trim(strip_tags($variables['page']['#title']))),
+      'name' => $site_config->get('name'),
+    );
+  }
+  // @todo Remove once views is not bypassing the view subscriber anymore.
+  //   @see https://www.drupal.org/node/2068471
+  elseif ($is_front_page) {
+    $head_title = array(
+      'title' => t('Home'),
+      'name' => $site_config->get('name'),
+    );
+  }
+  else {
+    $head_title = ['name' => $site_config->get('name')];
+    if ($site_config->get('slogan')) {
+      $head_title['slogan'] = strip_tags($site_config->get('slogan'));
+    }
+  }
+
+  $variables['head_title'] = $head_title;
+  // @deprecated in Drupal 8.0.0, will be removed before Drupal 9.0.0.
+  $variables['head_title_array'] = $head_title;
+
+  // Create placeholder strings for these keys.
+  // @see \Drupal\Core\Render\HtmlResponseSubscriber
+  $types = [
+    'styles' => 'css',
+    'scripts' => 'js',
+    'scripts_bottom' => 'js-bottom',
+    'head' => 'head',
+  ];
+  $variables['placeholder_token'] = Crypt::randomBytesBase64(55);
+  foreach ($types as $type => $placeholder_name) {
+    $placeholder = '<' . $placeholder_name . '-placeholder token="' . $variables['placeholder_token'] . '">';
+    $variables['#attached']['html_response_attachment_placeholders'][$type] = $placeholder;
+  }
 }

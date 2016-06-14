@@ -42,6 +42,7 @@ class BlockRenderer implements MainContentRendererInterface {
   protected $displayVariantManager;
   protected $eventDispatcher;
   protected $renderCache;
+  protected $elementName;
   protected $htmlResponseAttachmentsProcessor;
 
   /**
@@ -61,6 +62,7 @@ class BlockRenderer implements MainContentRendererInterface {
                               AttachmentsResponseProcessorInterface $html_response_attachments_processor) {
     $this->renderer = \Drupal::service('renderer');
     $this->htmlRenderer = $html_renderer;
+    $this->elementName = '';
     $this->displayVariantManager = $display_variant_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->renderCache = $render_cache;
@@ -213,6 +215,7 @@ class BlockRenderer implements MainContentRendererInterface {
     // Process URL parameters.
     $block_requested = $request->get("block");
     $isREST = $request->getContentType() == "json";
+    $this->elementName = $request->get("element_name");
     // Prepare.
     $this->prepareBlocks($main_content, $request, $route_match);
 
@@ -230,8 +233,10 @@ class BlockRenderer implements MainContentRendererInterface {
       if ($isREST) {
         return $this->renderBlockREST($this->blocks[$block_requested]);
       }
-      else {
+      else if ($this->elementName == '') {
         return $this->renderBlock($this->blocks[$block_requested]);
+      } else {
+        return $this->renderBlockPolymer($this->blocks[$block_requested]);
       }
     }
   }
@@ -289,6 +294,46 @@ class BlockRenderer implements MainContentRendererInterface {
       $html = [
         '#type' => 'wcrhtml',
         'page' => $render_array,
+        '#attached' => $this->pageAttachments,
+      ];
+      $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
+      // Add url to cache context, to prevent query arguments being ignored.
+      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url", "headers" ]);
+      // url.query_args
+      $html['#cache']['tags'][] = 'rendered';
+
+      $this->renderer->renderRoot($html);
+      $response = new HtmlResponse($html, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+      ]);
+      return $response;
+    }
+    else {
+      $response = new Response();
+      $response->setContent("Block not found.");
+      $response->setStatusCode(Response::HTTP_NOT_FOUND);
+      return $response;
+    }
+  }
+
+  /**
+   * Render a specific block.
+   *
+   * @param $block_to_render
+   * @return \Drupal\Core\Render\HtmlResponse|\Symfony\Component\HttpFoundation\Response
+   */
+  protected function renderBlockPolymer($block_to_render) {
+    if (!empty($block_to_render)) {
+      $render_array = $block_to_render['render_array'];
+
+      // Merge the assets.
+      $render_array = $this->renderer->mergeBubbleableMetadata($render_array, $this->pageAttachments);
+
+      // Use a custom wrapper instead of `html` theme hook.
+      $html = [
+        '#type' => 'polymer',
+        'page' => $render_array,
+        '#element_name' => $this->elementName,
         '#attached' => $this->pageAttachments,
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
