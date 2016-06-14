@@ -1,0 +1,21 @@
+<html>
+<head>
+
+  <script src="/libraries/bower_components/webcomponentsjs/webcomponents-lite.min.js?v=1.x"></script>
+  <script>
+    /* this script must run before Polymer is imported */
+    window.Polymer = {
+      dom: 'shadow',
+      lazyRegister: true
+    };
+  </script>
+  <link rel="import" href="/libraries/bower_components/polymer/polymer.html">
+  <link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fintegrity_content&element_name=test-block"></link>
+</head>
+        
+
+<body>
+This text is outside the custom element.
+<test-block></test-block>
+</body>
+
