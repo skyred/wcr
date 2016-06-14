@@ -14,7 +14,7 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
  
 ### Test steps (Embedding on Page)
  - Enable this module.
- - Install theme `integrity` and set as default. (This theme has better written CSS and therefore is used for demonstration) 
+ - Install theme `integrity` and set as default. (This theme has better written CSS and therefore is used for demonstration. If you want to test on other themes, make sure to modify the blocks names in `test.html`. i.e. from `integrity_*` to `yourtheme_*`.) 
  - Visit `http://siteurl/modules/wcr/export/test.html`. 
  - You should see a few blocks ("Branding", "Content", "Main Menu") embedded on the static page.
 
