@@ -266,7 +266,7 @@ class BlockRenderer implements MainContentRendererInterface {
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
-      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url" ]); //url.query_args
+      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url", "headers" ]); //url.query_args
 
       $html ['#cache']['tags'][] = 'rendered';
 
@@ -299,7 +299,7 @@ class BlockRenderer implements MainContentRendererInterface {
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
-      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url" ]); //url.query_args
+      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url", "headers" ]); //url.query_args
       $html ['#cache']['tags'][] = 'rendered';
 
 
