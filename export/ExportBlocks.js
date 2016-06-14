@@ -14,6 +14,11 @@
 
   baseURL = getBaseURL();
 
+  function setDrupalURL(drupalURL){
+    baseURL = drupalURL;
+  }
+
+
   function getBlockURL(block) {
     return baseURL;
   }
@@ -57,6 +62,7 @@
 
   window.ExportBlocks = {
     attachShadowDOM: attachShadowDOM,
-    getBaseUrl: getBaseURL
+    getBaseUrl: getBaseURL,
+    setDrupalUrl: setDrupalURL
   };
 }(jQuery));
