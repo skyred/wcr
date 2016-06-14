@@ -1,5 +1,4 @@
 services:
-
   # Event subscribers.
 #  refreshless.html_response.subscriber:
 #    class: Drupal\refreshless\EventSubscriber\HtmlResponseSubscriber
@@ -15,14 +14,13 @@ services:
 
   main_content_renderer.block:
     class: Drupal\wcr\Render\MainContent\BlockRenderer
-    arguments: ['@main_content_renderer.html', '@html_response.attachments_processor']
+    arguments: ['@main_content_renderer.html', '@plugin.manager.display_variant', '@event_dispatcher', '@render_cache', '@html_response.attachments_processor']
     tags:
       - { name: render.main_content_renderer, format: drupal_block }
 
   trackable_renderer:
     class: Drupal\wcr\Render\TrackableRenderer
     arguments: ['@controller_resolver', '@theme.manager', '@plugin.manager.element_info', '@render_placeholder_generator', '@render_cache', '@request_stack', '%renderer.config%']
-
 
   wcr.callstack:
     class: Drupal\wcr\CallStack
