@@ -18,7 +18,7 @@ class WcrServiceProvider extends ServiceProviderBase {
    */
   public function alter(ContainerBuilder $container) {
     // Override the twig class, to use our own TwigEnvironment.
-    $definition = $container->getDefinition('renderer');
-    $definition->setClass('Drupal\wcr\Render\TrackableRenderer');
+    /*$definition = $container->getDefinition('renderer');
+    $definition->setClass('Drupal\wcr\Render\TrackableRenderer');*/
   }
 }

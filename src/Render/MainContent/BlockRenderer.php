@@ -12,6 +12,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InsertCommand;
 use Drupal\Core\Display\ContextAwareVariantInterface;
+use Drupal\Core\Display\PageVariantInterface;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 
 use Drupal\Core\Render\BubbleableMetadata;
@@ -34,10 +35,9 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  */
 class BlockRenderer implements MainContentRendererInterface {
 
-
-
   protected $blocks;
   protected $page_attachments;
+  protected $htmlRenderer;
   protected $page;
   protected $renderer;
   protected $displayVariantManager;
@@ -53,11 +53,13 @@ class BlockRenderer implements MainContentRendererInterface {
    * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $html_response_attachments_processor
    * @internal param \Drupal\Core\Render\MainContent\MainContentRendererInterface $html_renderer
    */
-  public function __construct(PluginManagerInterface $display_variant_manager,
+  public function __construct(MainContentRendererInterface $html_renderer,
+                              PluginManagerInterface $display_variant_manager,
                               EventDispatcherInterface $event_dispatcher,
                               RenderCacheInterface $render_cache,
                               AttachmentsResponseProcessorInterface $html_response_attachments_processor) {
     $this->renderer = \Drupal::service('renderer');
+    $this->htmlRenderer = $html_renderer;
     $this->displayVariantManager = $display_variant_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->renderCache = $render_cache;
@@ -163,13 +165,12 @@ class BlockRenderer implements MainContentRendererInterface {
     }
 
     // Allow hooks to add attachments to $page['#attached'].
-    $this->invokePageAttachmentHooks($page);
+    $this->htmlRenderer->invokePageAttachmentHooks($page);
 
     return $page;
   }
 
   protected function prepareBlocks(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    // TODO: remove reliance on HTMLRenderer.
     $this->page = $this->preparePage($main_content, $request, $route_match);
 
     // Iterate through all blocks.
@@ -185,7 +186,6 @@ class BlockRenderer implements MainContentRendererInterface {
             );
           }
         }
-
       }
     }
     // Render each block
@@ -300,14 +300,11 @@ class BlockRenderer implements MainContentRendererInterface {
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
       $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url" ]); //url.query_args
-
       $html ['#cache']['tags'][] = 'rendered';
 
 
-   //   $html_head_attachments = array_intersect_key($this->page_attachments, array_flip(static::$htmlHeadAttachmentTypes));
-     // if (!empty($html_head_attachments)) {
-        $head = $this->renderAttachments($this->page_attachments);
-      //
+      $head = $this->renderAttachments($this->page_attachments);
+
       $this->renderer->renderRoot($html);
       $response = new AjaxResponse([
         "content" => $html["#markup"],
