@@ -23,6 +23,48 @@
     return baseURL;
   }
 
+  function parseStyles(styles) {
+    var html = $.parseHTML(styles);
+    var i;
+    var result = {};
+    result['all'] = [];
+    result['print'] = [];
+    for (i = 0; i < html.length; ++i){
+      if (html[i].tagName) {
+        if (html[i].tagName == 'LINK') {
+          var media = html[i].media;
+          var styleSheetUrl = html[i].href;
+          if (result[media] == undefined) {
+            result[media] = [];
+          }
+          result[media].push('@import url("' + styleSheetUrl +'");');
+        } else if (html[i].tagName == 'STYLE') {
+          var media = html[i].media;
+          var styleSheetUrls = html[i].textContent;
+          if (result[media] == undefined) {
+            result[media] = [];
+          }
+          result[media].push(styleSheetUrls);
+        }
+      }
+    }
+    return result;
+  }
+
+  function printStyles(styleArray) {
+    var i, j;
+    var medias = Object.keys(styleArray);
+    var result = "";
+    for (i = 0; i < medias.length; ++ i) {
+      result = result + '<style media="' + medias[i] + '">';
+      for (j = 0; j < styleArray[medias[i]].length; ++ j) {
+        result = result + styleArray[medias[i]][j];
+      }
+      result = result + '</style>';
+    }
+    return result;
+  }
+
   function detectAPI() {
     return document.body.createShadowRoot != null;
   }
@@ -48,7 +90,7 @@
   function attachShadowDOM(target, url, block) {
     getBlock(url,block, function(r){
       shadowRoot = target.createShadowRoot();
-      shadowRoot.innerHTML = r["attachments"]["styles"] +
+      shadowRoot.innerHTML = printStyles(parseStyles(r["attachments"]["styles"])) +
                              r["attachments"]["scripts"] +
                              r["content"] +
                              r["attachments"]["scripts_bottom"];
