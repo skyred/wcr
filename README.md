@@ -22,7 +22,7 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
  - Include jQuery on your page.
  - Include `export\ExportBlocks.js` from this module. 
  - In a `<script>` tag or a separate file that your HTML page references, write the following code: 
- ```
+```
    ExportBlocks.setDrupalUrl("http://yoursite.com/");
    ExportBlocks.attachShadowDOM(document.querySelector("#host"),'/','content/integrity_content');
    // #host is the id of the element you want to embed the block in.
