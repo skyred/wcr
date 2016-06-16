@@ -19,16 +19,20 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
  - Visit `http://siteurl/modules/wcr/export/test2.html`. 
  - You should see the main content block embedded on the static page.
 
-### ExportBlocks API - How to embed a block on your static site
- - Include jQuery on your page.
- - Include `export\ExportBlocks.js` from this module. 
- - In a `<script>` tag or a separate file that your HTML page references, write the following code: 
+### How to embed a block on a static page
+ - Include the polyfill in `<head>`
 ```
-   ExportBlocks.setDrupalUrl("http://yoursite.com/");
-   ExportBlocks.attachShadowDOM(document.querySelector("#host"),'/','content/bartik_content');
-   // #host is the id of the element you want to embed the block in.
-   // The second argument standards for the relative Drupal path (/, /node/, /admin/, etc.)
-   // The third arugment is the id of the block on the page.
- ```
-### Current Limitations
-  - All assets on the page are loaded (even though not needed by a block).
+<script src="/modules/twig_polymer/bower_components/webcomponentsjs/webcomponents-lite.min.js?v=1.x"></script>
+```
+ - In `<head>` also import the element for the block:
+```
+<link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fbartik_content&element_name=bartik-content"></link>
+<!-- Will simplify this to only one argument -->
+```
+ - In `<body>` of your static page, use the element you just imported:
+```
+<bartik-content></bartik-content> 
+```
+
+### Limitations
+ - CSS and JS doesn't work for custom themes yet.
