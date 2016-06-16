@@ -215,6 +215,7 @@ class BlockRenderer implements MainContentRendererInterface {
     // Process URL parameters.
     $block_requested = $request->get("block");
     $isREST = $request->getContentType() == "json";
+    $isBare = $request->get("mode") == 'bare';
     $this->elementName = $request->get("element_name");
     // Prepare.
     $this->prepareBlocks($main_content, $request, $route_match);
@@ -230,6 +231,9 @@ class BlockRenderer implements MainContentRendererInterface {
     }
     else {
       // Render Mode
+      if ($isBare) {
+        return $this->renderBlockPolymerBare($this->blocks[$block_requested]);
+      }
       if ($isREST) {
         return $this->renderBlockREST($this->blocks[$block_requested]);
       }
@@ -335,6 +339,44 @@ class BlockRenderer implements MainContentRendererInterface {
         'page' => $render_array,
         '#element_name' => $this->elementName,
         '#attached' => $this->pageAttachments,
+      ];
+      $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
+      // Add url to cache context, to prevent query arguments being ignored.
+      $html['#cache']['contexts'] = Cache::mergeContexts($html['#cache']['contexts'], [ "url", "headers" ]);
+      // url.query_args
+      $html['#cache']['tags'][] = 'rendered';
+
+      $this->renderer->renderRoot($html);
+      $response = new HtmlResponse($html, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+      ]);
+      return $response;
+    }
+    else {
+      $response = new Response();
+      $response->setContent("Block not found.");
+      $response->setStatusCode(Response::HTTP_NOT_FOUND);
+      return $response;
+    }
+  }
+
+  /**
+   * Render a specific block.
+   *
+   * @param $block_to_render
+   * @return \Drupal\Core\Render\HtmlResponse|\Symfony\Component\HttpFoundation\Response
+   */
+  protected function renderBlockPolymerBare($block_to_render) {
+    if (!empty($block_to_render)) {
+      $render_array = $block_to_render['render_array'];
+      list($region, $name) = explode('/', $block_to_render["id"]);
+      $name = str_replace('_', '-', $name);
+
+      // Use a custom wrapper instead of `html` theme hook.
+      $html = [
+        '#type' => 'polymerbare',
+        'page' => $render_array,
+        '#element_name' => $name,
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.

@@ -10,15 +10,24 @@
     };
   </script>
   
-  <link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fbartik_content&element_name=test-block"></link>
+  <link rel="import" href="/?_wrapper_format=drupal_block&block=content%2Fpolymer_content&mode=bare">
+  <link rel="import" href="/?_wrapper_format=drupal_block&block=sidebar_first%2Fpolymer_tools&mode=bare">
 
 </head>
         
 
 <body>
-This text is outside the custom element.
-CSS does not work at this moment.
-<test-block></test-block>
+This text is outside the custom element. CSS should be inline within each template. External CSS does not work at this moment.
+
+<h1>DEMO1: The content block </h1>
+<pre>Add import statement to head:  &lt;link rel=&quot;import&quot; href=&quot;/?_wrapper_format=drupal_block&amp;block=content%2Fpolymer_content&amp;mode=bare&quot;&gt;</pre>
+<pre>Usage: <code>&lt;polymer-content&gt;&lt;/polymer-content&gt;</code></pre>
+<polymer-content></polymer-content>
+
+<h1>DEMO2: The toolbox block </h1>
+<pre>Add import statement to head:  &lt;link rel=&quot;import&quot; href=&quot;/?_wrapper_format=drupal_block&amp;block=sidebar_first%2Fpolymer_tools&amp;mode=bare&quot;&gt;</pre>
+<pre>Usage: <code>&lt;polymer-tools&gt;&lt;/polymer-tools&gt;</code></pre>
+<polymer-tools></polymer-tools>
 </body>
 
 </html>
