@@ -94,7 +94,7 @@ class ComponentsDisplayVariant extends BlockDisplayVariant {
     public function build() {
         // Set default page cache keys that include the display.
         $build['#cache']['keys'] = [
-            'page_manager_block_display',
+            'components_display',
             $this->id(),
         ];
         $build['#pre_render'][] = [$this, 'buildRegions'];
@@ -203,55 +203,6 @@ class ComponentsDisplayVariant extends BlockDisplayVariant {
                 ->applyTo($build);
         }
         return $build;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-        // Don't call VariantBase::buildConfigurationForm() on purpose, because it
-        // adds a 'Label' field that we don't actually want to use - we store the
-        // label on the page variant entity.
-        //$form = parent::buildConfigurationForm($form, $form_state);
-
-        // Allow to configure the page title, even when adding a new display.
-        // Default to the page label in that case.
-        $form['page_title'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Page title'),
-            '#description' => $this->t('Configure the page title that will be used for this display.'),
-            '#default_value' => $this->configuration['page_title'] ?: '',
-        ];
-
-        $form['uuid'] = [
-            '#type' => 'value',
-            '#value' => $this->configuration['uuid'] ?: $this->uuidGenerator->generate(),
-        ];
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-        parent::submitConfigurationForm($form, $form_state);
-
-        if ($form_state->hasValue('page_title')) {
-            $this->configuration['page_title'] = $form_state->getValue('page_title');
-        }
-        if ($form_state->hasValue('uuid')) {
-            $this->configuration['uuid'] = $form_state->getValue('uuid');
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function defaultConfiguration() {
-        return parent::defaultConfiguration() + [
-            'page_title' => '',
-        ];
     }
 
     /**
