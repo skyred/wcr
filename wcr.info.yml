@@ -6,5 +6,5 @@ package: 'Web Components'
 dependencies:
   - drupal:system (>=8.1.x)
   - twig_polymer
-
+  - ctools
 
