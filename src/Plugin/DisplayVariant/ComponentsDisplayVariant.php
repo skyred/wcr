@@ -13,6 +13,7 @@ use Drupal\Core\Block\BlockManager;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Condition\ConditionManager;
+use Drupal\Core\Display\PageVariantInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\Context\ContextHandlerInterface;
@@ -31,7 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   admin_label = @Translation("Componentized Block page")
  * )
  */
-class ComponentsDisplayVariant extends BlockDisplayVariant {
+class ComponentsDisplayVariant extends BlockDisplayVariant implements PageVariantInterface{
 
     /**
      * The module handler.
@@ -234,7 +235,21 @@ class ComponentsDisplayVariant extends BlockDisplayVariant {
         }
         return $data;
     }
+    /**
+     * {@inheritdoc}
+     */
+    public function setMainContent(array $main_content) {
+        $this->mainContent = $main_content;
+        return $this;
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setTitle($title) {
+        $this->title = $title;
+        return $this;
+    }
     /**
      * {@inheritdoc}
      */

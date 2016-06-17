@@ -134,16 +134,14 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
       }
       $page_display
         ->setMainContent($main_content)
-        ->setTitle($title)
-        ->addCacheableDependency($event)
-        ->setConfiguration($event->getPluginConfiguration());
+        ->setTitle($title);
       // Some display variants need to be passed an array of contexts with
       // values because they can't get all their contexts globally. For example,
       // in Page Manager, you can create a Page which has a specific static
       // context (e.g. a context that refers to the Node with nid 6), if any
       // such contexts were added to the $event, pass them to the $page_display.
       if ($page_display instanceof ContextAwareVariantInterface) {
-        $page_display->setContexts($event->getContexts());
+     //   $page_display->setContexts($event->getContexts());
       }
 
       // Generate a #type => page render array using the page display variant,
