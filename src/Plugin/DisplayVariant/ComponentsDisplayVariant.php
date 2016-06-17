@@ -132,16 +132,10 @@ class ComponentsDisplayVariant extends BlockDisplayVariant {
 
                 $block_build = [
                     '#theme' => 'componentized_block',
-                    '#attributes' => [],
+                    '#element_name' => $block_id,
                     '#weight' => $weight++,
-                    '#configuration' => $block->getConfiguration(),
-                    '#plugin_id' => $block->getPluginId(),
-                    '#base_plugin_id' => $block->getBaseId(),
-                    '#derivative_plugin_id' => $block->getDerivativeId(),
-                    '#block_plugin' => $block,
-                    '#pre_render' => [[$this, 'buildBlock']],
                     '#cache' => [
-                        'keys' => ['page_manager_block_display', $this->id(), 'block', $block_id],
+                        'keys' => ['components_display', $this->id(), 'block', $block_id],
                         // Each block needs cache tags of the page and the block plugin, as
                         // only the page is a config entity that will trigger cache tag
                         // invalidations in case of block configuration changes.
