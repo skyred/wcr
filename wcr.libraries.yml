@@ -4,3 +4,8 @@ blockexporter:
     js/blockexporter.js: { weight: 200 }
   dependencies:
     - core/backbone
+
+wcr:
+  version: "1.0.0"
+  js:
+    js/wcr.js: { weight: 300 }

@@ -30,3 +30,6 @@ services:
 
   wcr.callstack:
     class: Drupal\wcr\CallStack
+
+  wcr.utilities:
+    class: Drupal\wcr\Service\Untilities
