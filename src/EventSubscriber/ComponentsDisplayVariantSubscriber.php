@@ -15,7 +15,7 @@ class ComponentsDisplayVariantSubscriber implements EventSubscriberInterface {
   public function onBlockPageDisplayVariantSelected(PageDisplayVariantSelectionEvent $event) {
     // Only activate when Block is enabled.
     if ($event->getPluginId() === 'block_page') {
-      $event->setPluginId('components_page');
+      $event->setPluginId('components_display');
     }
   }
 

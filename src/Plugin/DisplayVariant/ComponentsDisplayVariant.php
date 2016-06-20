@@ -45,10 +45,11 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       $this->id(),
     ];
 
-    foreach (Element::children($build) as $region => $blocks) {
-      $build[$region]['components_page_region_wrapper'] = ['#markup' => '<div data-components-page-region></div>'];
+    foreach (Element::children($build) as $region) {
+      $blocks = Element::children($build[$region]);
+      $build[$region]['components_display_region_wrapper'] = ['#markup' => '<div data-components-display-region></div>'];
 
-      foreach ($blocks as $key => $block) {
+      foreach ($blocks as $key) {
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
           '#element_name' => $region . '/' . $key,
