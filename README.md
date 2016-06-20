@@ -17,9 +17,9 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
  - Install and enable: module `twig_polymer` and this module. 
  - Set theme `polymer` as default. (https://github.com/ztl8702/polymer)
  - Visit homepage at `http://siteurl/`. Compare what you see with the next step.
-![screenshot_1](screenshot_1.png)
+![screenshot_1](docs/screenshot_1.png)
  - Visit `http://siteurl/modules/wcr/export/test_static.html`. 
-![screenshot_2](screenshot_2.png)
+![screenshot_2](docs/screenshot_2.png)
  - You should see the main content block embedded on the static page.
 
 ### How to embed a block on a static page
