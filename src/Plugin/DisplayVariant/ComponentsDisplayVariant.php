@@ -7,6 +7,7 @@
 
 namespace Drupal\wcr\Plugin\DisplayVariant;
 use Drupal\block\Plugin\DisplayVariant\BlockPageVariant;
+use Drupal\wcr\BlockList;
 use Drupal\wcr\Service\Utilities;
 
 use Drupal\Core\Render\Element;
@@ -33,6 +34,8 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       $this->id(),
     ];
 
+    $blockList = new BlockList($build);
+
     foreach (Element::children($build) as $region) {
       $blocks = Element::children($build[$region]);
       $build[$region]['components_display_region_wrapper'] = ['#markup' => '<div data-components-display-region></div>'];
@@ -48,6 +51,8 @@ class ComponentsDisplayVariant extends BlockPageVariant {
         $build[$region][$key]['#cache']['keys'][] = ['components_display', $this->id(), 'block', $key];
       }
     }
+
+    $debug = $blockList->toJson();
 
     return $build;
   }

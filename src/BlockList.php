@@ -6,13 +6,23 @@
 
 namespace Drupal\wcr;
 
+use Drupal\Core\Render\Element;
+
 
 class BlockList {
   protected $url;
   protected $regions;
   protected $blocks;
 
-  public function __construct() {
+  public function __construct($render_array) {
+    foreach (Element::children($render_array) as $region) {
+      $blocks = Element::children($render_array[$region]);
+      foreach ($blocks as $key) {
+        if ($key != 'components_display_region_wrapper') {
+          $this->addBlock($render_array[$region][$key], $region);
+        }
+      }
+    }
   }
 
   public function getUrl() {
