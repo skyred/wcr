@@ -51,8 +51,11 @@ class ComponentsDisplayVariant extends BlockPageVariant {
         $build[$region][$key]['#cache']['keys'][] = ['components_display', $this->id(), 'block', $key];
       }
     }
-
     $debug = $blockList->toJson();
+    if (!isset($build['#attached']['drupalSettings'])) {
+      $build['#attached']['drupalSettings'] = [];
+    }
+    $build['#attached']['drupalSettings']['componentsBlockList'] = $debug;
 
     return $build;
   }

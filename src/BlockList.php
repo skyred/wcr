@@ -19,7 +19,7 @@ class BlockList {
       $blocks = Element::children($render_array[$region]);
       foreach ($blocks as $key) {
         if ($key != 'components_display_region_wrapper') {
-          $this->addBlock($render_array[$region][$key], $region);
+          $this->addBlock($render_array[$region][$key], $key, $region);
         }
       }
     }
@@ -35,18 +35,18 @@ class BlockList {
     foreach ($this->regions as $name => $list){
       $result[$name] = [];
       foreach ($list as $block) {
-        $result[$name][] = $this->blocks[$block];
+        $result[$name][] = $block;
       }
     }
 
     return json_encode($result);
   }
 
-  public function addBlock($block, $region) {
-    $this->blocks[] = $block;
+  public function addBlock($block, $key, $region) {
+    $this->blocks[$key] = $block;
     if (!isset($this->regions[$region])) {
       $this->regions[$region] = [];
     }
-    $this->regions[$region][] = $block;
+    $this->regions[$region][$key] = $block;
   }
 }
