@@ -7,22 +7,10 @@
 
 namespace Drupal\wcr\Plugin\DisplayVariant;
 use Drupal\block\Plugin\DisplayVariant\BlockPageVariant;
+use Drupal\wcr\Service\Utilities;
 
-use Drupal\Component\Uuid\UuidInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Block\BlockManager;
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Condition\ConditionManager;
-use Drupal\Core\Display\PageVariantInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\Context\ContextHandlerInterface;
-use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Utility\Token;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Provides a variant plugin that contains Componentized blocks (as custom element tags).
@@ -52,9 +40,10 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       foreach ($blocks as $key) {
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
-          '#element_name' => $region . '/' . $key,
+          '#element_name' => Utilities::replaceUnderscore($key),
           '#weight' => $build[$region][$key]['#weight'],
           '#cache' => $build[$region][$key]['#cache'],
+          //TODO attachments
         ];
         $build[$region][$key]['#cache']['keys'][] = ['components_display', $this->id(), 'block', $key];
       }
