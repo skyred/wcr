@@ -1,8 +1,9 @@
-(function() {
+(function($) {
   "use strict";
   var baseURL = "";
 
   var blocks = [];
+  var regionList = [];
   function getBaseURL() {
     var pathArray = location.href.split( '/' );
     var protocol = pathArray[0];
@@ -24,15 +25,19 @@
   }
 
   function importElement(elementName) {
-    var url = getBlockURL(elementName, getCurrentInternalURL());
+    return importElementFromURL(elementName, getCurrentInternalURL());
+  }
+
+  function importElementFromURL(elementName, internalURL) {
+    var url = getBlockURL(elementName, internalURL);
     var link = document.createElement('link');
     link.rel = 'import';
     link.href = url;
-    document.head.appendChild(link);
+    return document.head.appendChild(link);
   }
 
   function removeImport(element) {
-    var oldLink = element.importLink;
+    var oldLink = element.link;
     document.head.removeChild(oldLink);
   }
 
@@ -56,17 +61,105 @@
     var regionNames = Object.keys(regions);
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
+      var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
+      regionList.push({
+        name: regionNames[i],
+        element: regionElement,
+      });
       for (var j = 0; j < blockNames.length; ++j) {
         var elementId = regionNames[i] + '/' + blockNames[j];
-        importElement(elementId);
+        var link = importElement(elementId);
+
+        this.blocks.push({
+          region: regionNames[i],
+          block: blockNames[j],
+          element: $(convertToElementName(blockNames[j])),
+          link: link,
+        })
       }
     }
+  }
+
+  function convertToElementName(str) {
+    var tmp = str.replace(/_/g, '-');
+    if (tmp.indexOf('-') == -1) {
+      tmp = 'x-' + tmp;
+    }
+    return tmp;
+  }
+
+  function removeAllImports() {
+    for (var i = 0; i < this.blocks.length; ++i) {
+      removeImport(this.blocks[i]);
+    }
+  }
+
+  function sendRequest(internalURL, callback) {
+    $.ajax({
+      method: 'GET',
+      url: baseURL + internalURL,
+      data: {
+        '_wrapper_format': 'drupal_components',
+      }
+    }).done(function(result) {
+      console.log('success');
+      //console.log(result);
+      callback(result);
+    }).fail(function(e){
+      console.log('error');
+    });
+  }
+
+  function findRegion(regionName) {
+    for (var i = 0; i < this.regionList.length; ++i) {
+      if (regionList[i].name == regionName)
+        return regionList[i];
+    }
+    return null;
+  }
+
+  function navigateTo(internalURL) {
+    this.removeAllElements();
+    this.removeAllImports();
+    sendRequest(internalURL, function(r) {
+      var regionNames = Object.keys(r);
+      for (var i = 0; i < regionNames.length; ++i) {
+        var blockNames = Object.keys(r[regionNames[i]]);
+        for (var j = 0; j < blockNames.length; ++j) {
+          var elementId = regionNames[i] + '/' + blockNames[j];
+          var link = importElementFromURL(elementId, internalURL);
+          var elementNew = document.createElement(convertToElementName(blockNames[j]));
+          wcr.blocks.push({
+            region: regionNames[i],
+            block: blockNames[j],
+            element: findRegion(regionNames[i]).element.appendChild(elementNew),
+            link: link,
+          })
+        }
+      }
+    });
+  }
+
+  function removeAllElements() {
+    for (var i = 0; i < this.blocks.length; ++i) {
+      this.blocks[i].element.remove();
+    }
+    this.blocks = [];
   }
 
   window.wcr = {
     getCurrentInternalURL : getCurrentInternalURL,
     importElement: importElement,
     loadFromMetadata: loadFromMetadata,
-
+    blocks: blocks,
+    regions: regionList,
+    removeAllImports: removeAllImports,
+    removeAllElements: removeAllElements,
+    convertToElementName: convertToElementName,
+    navigateTo: navigateTo,
   };
-}());
+
+  if (drupalSettings.componentsBlockList) {
+    wcr.loadFromMetadata();
+  }
+}(jQuery));

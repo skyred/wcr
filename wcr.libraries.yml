@@ -8,7 +8,8 @@ blockexporter:
 wcr:
   version: "1.0.0"
   js:
-    js/wcr.js: { weight: -300 }
+    js/wcr.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - core/jquery

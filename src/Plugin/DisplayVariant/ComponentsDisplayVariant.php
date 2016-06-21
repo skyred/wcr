@@ -38,7 +38,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
 
     foreach (Element::children($build) as $region) {
       $blocks = Element::children($build[$region]);
-      $build[$region]['components_display_region_wrapper'] = ['#markup' => '<div data-components-display-region></div>'];
+      $build[$region]['components_display_region_wrapper'] = ['#markup' => '<div data-components-display-region="' . $region . '"></div>'];
 
       foreach ($blocks as $key) {
         $build[$region][$key] = [
