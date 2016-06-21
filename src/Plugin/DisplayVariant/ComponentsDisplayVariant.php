@@ -43,7 +43,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       foreach ($blocks as $key) {
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
-          '#element_name' => Utilities::replaceUnderscore($key),
+          '#element_name' => Utilities::convertToElementName($key),
           '#weight' => $build[$region][$key]['#weight'],
           '#cache' => $build[$region][$key]['#cache'],
           //TODO attachments

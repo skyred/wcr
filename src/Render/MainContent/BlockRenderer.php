@@ -24,6 +24,7 @@ use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RenderEvents;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\wcr\Service\Utilities;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -369,8 +370,7 @@ class BlockRenderer implements MainContentRendererInterface {
   protected function renderBlockPolymerBare($block_to_render) {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
-      list($region, $name) = explode('/', $block_to_render["id"]);
-      $name = str_replace('_', '-', $name);
+      $name = Utilities::getElementName($block_to_render["id"]);
 
       // Use a custom wrapper instead of `html` theme hook.
       $html = [

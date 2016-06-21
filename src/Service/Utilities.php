@@ -21,11 +21,15 @@ class Utilities {
 
   public static function getElementName($block_id) {
     $name = self::getBlockName($block_id);
-    $name = str_replace('_', '-', $name);
+    $name = self::convertToElementName($name);
     return $name;
   }
 
-  public static function replaceUnderscore($str) {
-    return str_replace('_', '-', $str);
+  public static function convertToElementName($str) {
+    $tmp = str_replace('_', '-', $str);
+    if (strpos($tmp, '-') === FALSE) {
+      $tmp = 'x-' . $tmp;
+    }
+    return $tmp;
   }
 }
