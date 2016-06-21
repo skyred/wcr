@@ -39,7 +39,7 @@ class BlockList {
       }
     }
 
-    return json_encode($result);
+    return json_encode($this->regions);
   }
 
   public function addBlock($block, $key, $region) {

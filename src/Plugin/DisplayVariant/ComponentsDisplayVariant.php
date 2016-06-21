@@ -48,15 +48,16 @@ class ComponentsDisplayVariant extends BlockPageVariant {
           '#cache' => $build[$region][$key]['#cache'],
           //TODO attachments
         ];
-        $build[$region][$key]['#cache']['keys'][] = ['components_display', $this->id(), 'block', $key];
+        $build[$region][$key]['#cache']['keys'][] = ['components_display', 'block', $key];
+        unset($build[$region][$key]['#cache']);
       }
+      $build[$region]['#sorted'] = false;
     }
     $debug = $blockList->toJson();
     if (!isset($build['#attached']['drupalSettings'])) {
       $build['#attached']['drupalSettings'] = [];
     }
     $build['#attached']['drupalSettings']['componentsBlockList'] = $debug;
-
     return $build;
   }
 

@@ -19,8 +19,12 @@
     return baseURL + internalURL + "?_wrapper_format=drupal_block&block=" + block + '&mode=bare';
   }
 
-  function importElement(element) {
-    var url = getBlockURL(element.name);
+  function getCurrentInternalURL() {
+    return location.pathname;
+  }
+
+  function importElement(elementName) {
+    var url = getBlockURL(elementName, getCurrentInternalURL());
     var link = document.createElement('link');
     link.rel = 'import';
     link.href = url;
@@ -46,4 +50,23 @@
     blocks.push(newElement);
     importElement(newElement);
   }
+
+  function loadFromMetadata () {
+    var regions = JSON.parse(drupalSettings.componentsBlockList);
+    var regionNames = Object.keys(regions);
+    for (var i = 0; i < regionNames.length; ++i) {
+      var blockNames = Object.keys(regions[regionNames[i]]);
+      for (var j = 0; j < blockNames.length; ++j) {
+        var elementId = regionNames[i] + '/' + blockNames[j];
+        importElement(elementId);
+      }
+    }
+  }
+
+  window.wcr = {
+    getCurrentInternalURL : getCurrentInternalURL,
+    importElement: importElement,
+    loadFromMetadata: loadFromMetadata,
+
+  };
 }());

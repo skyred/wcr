@@ -103,8 +103,8 @@ class BlockRenderer implements MainContentRendererInterface {
     else {
       // Select the page display variant to be used to render this main content,
       // default to the built-in "simple page".
-      $event = new PageDisplayVariantSelectionEvent('simple_page', $route_match);
-      $this->eventDispatcher->dispatch(RenderEvents::SELECT_PAGE_DISPLAY_VARIANT, $event);
+      $event = new PageDisplayVariantSelectionEvent('block_page', $route_match);
+      //$this->eventDispatcher->dispatch(RenderEvents::SELECT_PAGE_DISPLAY_VARIANT, $event);
       $variant_id = $event->getPluginId();
 
       // We must render the main content now already, because it might provide a
