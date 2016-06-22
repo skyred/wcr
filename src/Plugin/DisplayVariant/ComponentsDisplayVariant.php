@@ -43,13 +43,14 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       foreach ($blocks as $key) {
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
-          '#element_name' => Utilities::convertToElementName($key),
+          '#element_name' => Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath(),
           '#weight' => $build[$region][$key]['#weight'],
           '#cache' => $build[$region][$key]['#cache'],
           //TODO attachments
         ];
         $build[$region][$key]['#cache']['keys'][] = ['components_display', 'block', $key];
-        unset($build[$region][$key]['#cache']);
+        $build[$region][$key]['#cache']['max-age'] = 0;
+        //unset($build[$region][$key]['#cache']);
       }
       $build[$region]['#sorted'] = false;
     }

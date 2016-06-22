@@ -7,6 +7,7 @@
 
 namespace Drupal\wcr\Service;
 
+use Drupal\Core\Url;
 use Drupal\wcr\BlockList;
 
 class Utilities {
@@ -31,5 +32,10 @@ class Utilities {
       $tmp = 'x-' . $tmp;
     }
     return $tmp;
+  }
+
+  public static function hashedCurrentPath() {
+    $path = Url::fromRoute('<current>')->getInternalPath();
+    return crc32($path);
   }
 }

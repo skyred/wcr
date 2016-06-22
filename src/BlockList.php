@@ -7,6 +7,7 @@
 namespace Drupal\wcr;
 
 use Drupal\Core\Render\Element;
+use Drupal\wcr\Service\Utilities;
 
 
 class BlockList {
@@ -39,7 +40,10 @@ class BlockList {
       }
     }
 
-    return json_encode($this->regions);
+    return json_encode([
+      'regions' => $this->regions,
+      'hash' => Utilities::hashedCurrentPath(),
+    ]);
   }
 
   public function addBlock($block, $key, $region) {

@@ -57,7 +57,9 @@
   }
 
   function loadFromMetadata () {
-    var regions = JSON.parse(drupalSettings.componentsBlockList);
+    var tmp = JSON.parse(drupalSettings.componentsBlockList);
+    var regions = tmp['regions'];
+    var hashSuffix = tmp['hash'];
     var regionNames = Object.keys(regions);
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
@@ -73,7 +75,7 @@
         this.blocks.push({
           region: regionNames[i],
           block: blockNames[j],
-          element: $(convertToElementName(blockNames[j])),
+          element: $(convertToElementName(blockNames[j]) + '-' + hashSuffix),
           link: link,
         })
       }
@@ -89,8 +91,8 @@
   }
 
   function removeAllImports() {
-    for (var i = 0; i < this.blocks.length; ++i) {
-      removeImport(this.blocks[i]);
+    for (var i = 0; i < wcr.blocks.length; ++i) {
+      removeImport(wcr.blocks[i]);
     }
   }
 
@@ -111,24 +113,26 @@
   }
 
   function findRegion(regionName) {
-    for (var i = 0; i < this.regionList.length; ++i) {
-      if (regionList[i].name == regionName)
-        return regionList[i];
+    for (var i = 0; i < wcr.regions.length; ++i) {
+      if (wcr.regions[i].name == regionName)
+        return wcr.regions[i];
     }
     return null;
   }
 
   function navigateTo(internalURL) {
-    this.removeAllElements();
     this.removeAllImports();
-    sendRequest(internalURL, function(r) {
+    this.removeAllElements();
+    sendRequest(internalURL, function(tmp) {
+      var r = tmp['regions'];
+      var hashSuffix = tmp['hash'];
       var regionNames = Object.keys(r);
       for (var i = 0; i < regionNames.length; ++i) {
         var blockNames = Object.keys(r[regionNames[i]]);
         for (var j = 0; j < blockNames.length; ++j) {
           var elementId = regionNames[i] + '/' + blockNames[j];
           var link = importElementFromURL(elementId, internalURL);
-          var elementNew = document.createElement(convertToElementName(blockNames[j]));
+          var elementNew = document.createElement(convertToElementName(blockNames[j]) + '-' + hashSuffix);
           wcr.blocks.push({
             region: regionNames[i],
             block: blockNames[j],
@@ -141,10 +145,10 @@
   }
 
   function removeAllElements() {
-    for (var i = 0; i < this.blocks.length; ++i) {
-      this.blocks[i].element.remove();
+    for (var i = 0; i < wcr.blocks.length; ++i) {
+      wcr.blocks[i].element.remove();
     }
-    this.blocks = [];
+    wcr.blocks = [];
   }
 
   window.wcr = {
