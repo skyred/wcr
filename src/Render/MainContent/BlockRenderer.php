@@ -384,6 +384,11 @@ class BlockRenderer implements MainContentRendererInterface {
       // url.query_args
       $html['#cache']['tags'][] = 'rendered';
 
+      if ($name == 'x-messages') {
+        $html = [
+          "#markup" => '',
+        ];
+      }
       $this->renderer->renderRoot($html);
       $response = new HtmlResponse($html, 200, [
         'Content-Type' => 'text/html; charset=UTF-8',
