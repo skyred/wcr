@@ -46,8 +46,12 @@ class Utilities {
     return $tmp;
   }
 
+  public static function currentPath() {
+    return Url::fromRoute('<current>')->getInternalPath();
+  }
+
   public static function hashedCurrentPath() {
-    $path = Url::fromRoute('<current>')->getInternalPath();
+    $path = self::currentPath();
     return self::hash($path);
   }
 
@@ -56,11 +60,6 @@ class Utilities {
   }
 
   public function createBlockID(array &$elements) {
-    // If the maximum age is zero, then caching is effectively prohibited.
-    if (isset($elements['#cache']['max-age']) && $elements['#cache']['max-age'] === 0) {
-      return '[timestamp:' . microtime() . ']';
-    }
-
     $cid_parts = [];
     if (isset($elements['#cache']['keys'])) {
       $cid_parts = $elements['#cache']['keys'];

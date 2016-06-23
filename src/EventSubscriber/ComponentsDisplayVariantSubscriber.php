@@ -14,7 +14,8 @@ class ComponentsDisplayVariantSubscriber implements EventSubscriberInterface {
 
   public function onBlockPageDisplayVariantSelected(PageDisplayVariantSelectionEvent $event) {
     // Only activate when Block is enabled.
-    if ($event->getPluginId() === 'block_page') {
+    $format = \Drupal::request()->get('_wrapper_format');
+    if ($format != 'drupal_block' && $event->getPluginId() === 'block_page') {
       $event->setPluginId('components_display');
     }
   }
@@ -24,6 +25,7 @@ class ComponentsDisplayVariantSubscriber implements EventSubscriberInterface {
    */
   static function getSubscribedEvents() {
     // Set a very low priority, so that it runs last.
+   // if (Drupal::request()->getFormat())
     $events[RenderEvents::SELECT_PAGE_DISPLAY_VARIANT][] = ['onBlockPageDisplayVariantSelected', -10000];
     return $events;
   }

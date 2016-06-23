@@ -106,7 +106,7 @@ class BlockRenderer implements MainContentRendererInterface {
       // Select the page display variant to be used to render this main content,
       // default to the built-in "simple page".
       $event = new PageDisplayVariantSelectionEvent('block_page', $route_match);
-      //$this->eventDispatcher->dispatch(RenderEvents::SELECT_PAGE_DISPLAY_VARIANT, $event);
+      $this->eventDispatcher->dispatch(RenderEvents::SELECT_PAGE_DISPLAY_VARIANT, $event);
       $variant_id = $event->getPluginId();
 
       // We must render the main content now already, because it might provide a
@@ -192,6 +192,10 @@ class BlockRenderer implements MainContentRendererInterface {
         // Non-empty region, iterate the blocks inside it.
         foreach ($this->page[$region] as $key => $child) {
           if (substr($key, 0, 1) != '#') {
+            // Add `route` context to main content block
+            if ($key == 'polymer_content') { //TODO remove
+              $child['#cache']['contexts'] = array_merge($child['#cache']['contexts'], ['route']);
+            }
             $this->blocks[$region . '/' . $key] = array(
               "id" => $region . '/' . $key,
               "render_array" => $child,
@@ -263,6 +267,10 @@ class BlockRenderer implements MainContentRendererInterface {
       $debug .= $key;
       $debug .= ' ';
       $debug .= Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($this->blocks[$key]['render_array']));
+      $tmp = $this->blocks[$key]['render_array'];
+      $this->renderer->renderRoot($tmp);
+      $region_metadata = BubbleableMetadata::createFromRenderArray($tmp);
+      $debug .= ' ' . Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($tmp));
       $debug .= '<br /> ';
     }
 
