@@ -33,16 +33,27 @@ class BlockList {
   public function toJson() {
     $result = [];
 
-    foreach ($this->regions as $name => $list){
-      $result[$name] = [];
-      foreach ($list as $block) {
-        $result[$name][] = $block;
+    foreach ($this->regions as $regionName => $blockList){
+      $result[$regionName] = [];
+      foreach ($blockList as $key => $block) {
+        $result[$regionName][$key] = [
+          'element_name' => $block['#element_name'],
+          'hash' => $block['#hash'],
+          'region' => $regionName,
+          'block' => $key,
+        ];
+        if (isset($block['#original_cache'])) {
+          $result[$regionName][$key]['cache'] = $block['#original_cache'];
+        }
+        else {
+          $result[$regionName][$key]['cache'] = $block['#cache'];
+        }
       }
     }
 
     return json_encode([
-      'regions' => $this->regions,
-      'hash' => Utilities::hashedCurrentPath(),
+      'regions' => $result,
+      'hashSuffix' => Utilities::hashedCurrentPath(),
     ]);
   }
 

@@ -270,7 +270,7 @@ class BlockRenderer implements MainContentRendererInterface {
       $tmp = $this->blocks[$key]['render_array'];
       $this->renderer->renderRoot($tmp);
       $region_metadata = BubbleableMetadata::createFromRenderArray($tmp);
-      $debug .= ' ' . Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($tmp));
+      $debug .= ' ' . \Drupal::service('wcr.utilities')->createBlockID($tmp);
       $debug .= '<br /> ';
     }
 
@@ -388,7 +388,7 @@ class BlockRenderer implements MainContentRendererInterface {
       $html = [
         '#type' => 'polymerbare',
         'page' => $render_array,
-        '#element_name' => $name . '-' . Utilities::hash($cacheID),
+        '#element_name' => $name . '-' . Utilities::hashedCurrentPath(),
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.

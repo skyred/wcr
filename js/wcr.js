@@ -59,7 +59,6 @@
   function loadFromMetadata () {
     var tmp = JSON.parse(drupalSettings.componentsBlockList);
     var regions = tmp['regions'];
-    var hashSuffix = tmp['hash'];
     var regionNames = Object.keys(regions);
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
@@ -75,7 +74,7 @@
         this.blocks.push({
           region: regionNames[i],
           block: blockNames[j],
-          element: $(convertToElementName(blockNames[j]) + '-' + hashSuffix),
+          element: $(regions[regionNames[i]][blockNames[j]]['element_name']),
           link: link,
         })
       }

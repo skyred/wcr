@@ -41,11 +41,14 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       $build[$region]['components_display_region_wrapper'] = ['#markup' => '<div data-components-display-region="' . $region . '"></div>'];
 
       foreach ($blocks as $key) {
+        \Drupal::service('renderer')->renderRoot($build[$region][$key]);
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
           '#element_name' => Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath(),
+          '#hash' => Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($build[$region][$key])),
           '#weight' => $build[$region][$key]['#weight'],
           '#cache' => $build[$region][$key]['#cache'],
+          '#original_cache' => $build[$region][$key]['#cache'],
           //TODO attachments
         ];
         $build[$region][$key]['#cache']['keys'][] = ['components_display', 'block', $key];
