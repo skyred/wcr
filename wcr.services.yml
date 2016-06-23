@@ -37,4 +37,5 @@ services:
     class: Drupal\wcr\CallStack
 
   wcr.utilities:
-    class: Drupal\wcr\Service\Untilities
+    class: Drupal\wcr\Service\Utilities
+    arguments: ['@cache_contexts_manager']

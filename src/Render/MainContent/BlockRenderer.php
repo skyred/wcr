@@ -19,6 +19,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\MainContent\MainContentRendererInterface;
 use Drupal\Core\Render\PageDisplayVariantSelectionEvent;
+use Drupal\Core\Render\RenderCache;
 use Drupal\Core\Render\RenderCacheInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RenderEvents;
@@ -371,7 +372,7 @@ class BlockRenderer implements MainContentRendererInterface {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
       $name = Utilities::getElementName($block_to_render["id"]);
-
+      $cacheID = \Drupal::service('wcr.utilities')->createCacheID($render_array);
       // Use a custom wrapper instead of `html` theme hook.
       $html = [
         '#type' => 'polymerbare',
