@@ -38,7 +38,7 @@ class BlockList {
       foreach ($blockList as $key => $block) {
         $result[$regionName][$key] = [
           'element_name' => (isset($block['#element_name']))? $block['#element_name'] : (Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath()),
-          'hash' => $block['#hash'],
+          'hash' => (isset($block['#hash'])) ? $block['#hash'] : Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($block)),
           'region' => $regionName,
           'block' => $key,
         ];

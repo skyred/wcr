@@ -34,7 +34,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       $this->id(),
     ];
 
-    $blockList = new BlockList($build);
+
 
     foreach (Element::children($build) as $region) {
       $blocks = Element::children($build[$region]);
@@ -57,6 +57,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       }
       $build[$region]['#sorted'] = false;
     }
+    $blockList = new BlockList($build);
     $debug = $blockList->toJson();
     if (!isset($build['#attached']['drupalSettings'])) {
       $build['#attached']['drupalSettings'] = [];

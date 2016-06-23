@@ -2,8 +2,8 @@
   "use strict";
   var baseURL = "";
 
-  var blocks = [];
-  var regionList = [];
+  var blocks = {};
+  var regionList = {};
   var currentPath = '';
   function getBaseURL() {
     var pathArray = location.href.split( '/' );
@@ -44,10 +44,11 @@
 
   function commandUpdate(oldElement, newElement, newPath) {
     removeImport(oldElement);
-    var link = importElementFromURL(newElement, newPath);
+    var link = importElementFromURL(newElement.region + '/' + newElement.block, newPath);
     var elementNew = document.createElement(newElement['tagname']);
+    oldElement.element.parentNode.replaceChild(elementNew, oldElement.element);
     return {
-      element: oldElement.element.parentNode.replaceChild(elementNew, oldElement.element),
+      element: elementNew,
       link: link
     };
   }
@@ -60,7 +61,7 @@
   function commandNew(newElement, newPath) {
     var elementNew = document.createElement(newElement['tagname']);
     return {
-      link: importElementFromURL(newElement, newPath),
+      link: importElementFromURL(newElement.region + '/' + newElement.block, newPath),
       element: wcr.regions[newElement['region']].element.appendChild(elementNew)
     };
   }
@@ -69,8 +70,8 @@
     var tmp = JSON.parse(drupalSettings.componentsBlockList);
     var regions = tmp['regions'];
     var regionNames = Object.keys(regions);
-    wcr.regions = [];
-    wcr.blocks[wcr.currentPath] = [];
+    wcr.regions = {};
+    wcr.blocks[wcr.currentPath] = {};
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
       var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
@@ -86,7 +87,7 @@
           region: regionNames[i],
           block: blockNames[j],
           tagname: regions[regionNames[i]][blockNames[j]]['element_name'],
-          element: $(regions[regionNames[i]][blockNames[j]]['element_name']),
+          element: $(regions[regionNames[i]][blockNames[j]]['element_name'])[0],
           hash: regions[regionNames[i]][blockNames[j]]['hash'],
           link: link,
         };
@@ -134,7 +135,6 @@
 
   function navigateTo(newPath) {
 
-    this.removeAllElements();
     sendRequest(newPath, function(tmp) {
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
@@ -156,29 +156,30 @@
           if (wcr.blocks[wcr.currentPath][blockNames[j]] == null ){
             //NEW
             var result = commandNew(wcr.blocks[newPath][blockNames[j]], newPath);
-            wcr[blocks][newPath][blockNames[j]]['link'] = result['link'];
-            wcr[blocks][newPath][blockNames[j]]['element'] = result['element'];
+            wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
+            wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
           } else if (wcr.blocks[wcr.currentPath][blockNames[j]]['hash'] != wcr.blocks[newPath][blockNames[j]]['hash']) {
             //UPDATE
-            var result = commandUpdate(wcr.blocks[newPath][blockNames[j]], newPath);
-            wcr[blocks][newPath][blockNames[j]]['link'] = result['link'];
-            wcr[blocks][newPath][blockNames[j]]['element'] = result['element'];
+            var result = commandUpdate(wcr.blocks[wcr.currentPath][blockNames[j]], wcr.blocks[newPath][blockNames[j]], newPath);
+            wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
+            wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
           } else {
             //SAME
-            wcr[blocks][newPath][blockNames[j]]['link'] = wcr[blocks][wcr.currentPath][blockNames[j]]['link'];
-            wcr[blocks][newPath][blockNames[j]]['element'] = wcr[blocks][wcr.currentPath][blockNames[j]]['element'];
+            wcr.blocks[newPath][blockNames[j]]['link'] = wcr.blocks[wcr.currentPath][blockNames[j]]['link'];
+            wcr.blocks[newPath][blockNames[j]]['element'] = wcr.blocks[wcr.currentPath][blockNames[j]]['element'];
           }
         }
       }
+      wcr.currentPath = newPath;
     });
-    wcr.currentPath = newURL;
+
   }
 
   function removeAllElements() {
     for (var i = 0; i < wcr.blocks.length; ++i) {
       wcr.blocks[i].element.remove();
     }
-    wcr.blocks = [];
+    wcr.blocks = {};
   }
 
   window.wcr = {
