@@ -4,6 +4,7 @@
 
   var blocks = [];
   var regionList = [];
+  var currentPath = '';
   function getBaseURL() {
     var pathArray = location.href.split( '/' );
     var protocol = pathArray[0];
@@ -41,42 +42,54 @@
     document.head.removeChild(oldLink);
   }
 
-  function commandUpdate(oldElement, newElement) {
-    removeImport(blocks[oldElement]);
-    blocks.push(newElement);
-    importElement(newElement);
+  function commandUpdate(oldElement, newElement, newPath) {
+    removeImport(oldElement);
+    var link = importElementFromURL(newElement, newPath);
+    var elementNew = document.createElement(newElement['tagname']);
+    return {
+      element: oldElement.element.parentNode.replaceChild(elementNew, oldElement.element),
+      link: link
+    };
   }
 
   function commandDelete(oldElement) {
-    removeImport(blocks[oldElement]);
+    removeImport(oldElement);
+    oldElement.element.remove();
   }
 
-  function commandNew(newElement) {
-    blocks.push(newElement);
-    importElement(newElement);
+  function commandNew(newElement, newPath) {
+    var elementNew = document.createElement(newElement['tagname']);
+    return {
+      link: importElementFromURL(newElement, newPath),
+      element: wcr.regions[newElement['region']].element.appendChild(elementNew)
+    };
   }
 
-  function loadFromMetadata () {
+  function loadFromMetadata() {
     var tmp = JSON.parse(drupalSettings.componentsBlockList);
     var regions = tmp['regions'];
     var regionNames = Object.keys(regions);
+    wcr.regions = [];
+    wcr.blocks[wcr.currentPath] = [];
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
       var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
-      regionList.push({
+      wcr.regions[regionNames[i]] = {
         name: regionNames[i],
         element: regionElement,
-      });
+      };
       for (var j = 0; j < blockNames.length; ++j) {
         var elementId = regionNames[i] + '/' + blockNames[j];
         var link = importElement(elementId);
 
-        this.blocks.push({
+        wcr.blocks[wcr.currentPath][blockNames[j]] = {
           region: regionNames[i],
           block: blockNames[j],
+          tagname: regions[regionNames[i]][blockNames[j]]['element_name'],
           element: $(regions[regionNames[i]][blockNames[j]]['element_name']),
+          hash: regions[regionNames[i]][blockNames[j]]['hash'],
           link: link,
-        })
+        };
       }
     }
   }
@@ -119,28 +132,46 @@
     return null;
   }
 
-  function navigateTo(internalURL) {
-    this.removeAllImports();
+  function navigateTo(newPath) {
+
     this.removeAllElements();
-    sendRequest(internalURL, function(tmp) {
+    sendRequest(newPath, function(tmp) {
       var r = tmp['regions'];
-      var hashSuffix = tmp['hash'];
       var regionNames = Object.keys(r);
+      wcr.blocks[newPath] = [];
       for (var i = 0; i < regionNames.length; ++i) {
         var blockNames = Object.keys(r[regionNames[i]]);
         for (var j = 0; j < blockNames.length; ++j) {
           var elementId = regionNames[i] + '/' + blockNames[j];
-          var link = importElementFromURL(elementId, internalURL);
-          var elementNew = document.createElement(convertToElementName(blockNames[j]) + '-' + hashSuffix);
-          wcr.blocks.push({
+          var link = importElementFromURL(elementId, newPath);
+          var elementNew = document.createElement(r[regionNames[i]][blockNames[j]]['element_name']);
+          wcr.blocks[newPath][blockNames[j]] = {
             region: regionNames[i],
             block: blockNames[j],
-            element: findRegion(regionNames[i]).element.appendChild(elementNew),
-            link: link,
-          })
+            tagname: r[regionNames[i]][blockNames[j]]['element_name'],
+            hash: r[regionNames[i]][blockNames[j]]['hash'],
+            //link: link,
+          };
+
+          if (wcr.blocks[wcr.currentPath][blockNames[j]] == null ){
+            //NEW
+            var result = commandNew(wcr.blocks[newPath][blockNames[j]], newPath);
+            wcr[blocks][newPath][blockNames[j]]['link'] = result['link'];
+            wcr[blocks][newPath][blockNames[j]]['element'] = result['element'];
+          } else if (wcr.blocks[wcr.currentPath][blockNames[j]]['hash'] != wcr.blocks[newPath][blockNames[j]]['hash']) {
+            //UPDATE
+            var result = commandUpdate(wcr.blocks[newPath][blockNames[j]], newPath);
+            wcr[blocks][newPath][blockNames[j]]['link'] = result['link'];
+            wcr[blocks][newPath][blockNames[j]]['element'] = result['element'];
+          } else {
+            //SAME
+            wcr[blocks][newPath][blockNames[j]]['link'] = wcr[blocks][wcr.currentPath][blockNames[j]]['link'];
+            wcr[blocks][newPath][blockNames[j]]['element'] = wcr[blocks][wcr.currentPath][blockNames[j]]['element'];
+          }
         }
       }
     });
+    wcr.currentPath = newURL;
   }
 
   function removeAllElements() {
@@ -160,9 +191,12 @@
     removeAllElements: removeAllElements,
     convertToElementName: convertToElementName,
     navigateTo: navigateTo,
+    currentPath: currentPath,
   };
 
   if (drupalSettings.componentsBlockList) {
+    wcr.currentPath = getCurrentInternalURL();
     wcr.loadFromMetadata();
+
   }
 }(jQuery));

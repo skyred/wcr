@@ -37,7 +37,7 @@ class BlockList {
       $result[$regionName] = [];
       foreach ($blockList as $key => $block) {
         $result[$regionName][$key] = [
-          'element_name' => $block['#element_name'],
+          'element_name' => (isset($block['#element_name']))? $block['#element_name'] : (Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath()),
           'hash' => $block['#hash'],
           'region' => $regionName,
           'block' => $key,
