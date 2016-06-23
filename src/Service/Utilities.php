@@ -48,13 +48,17 @@ class Utilities {
 
   public static function hashedCurrentPath() {
     $path = Url::fromRoute('<current>')->getInternalPath();
-    return crc32($path);
+    return self::hash($path);
   }
 
-  public function createCacheID(array &$elements) {
+  public static function hash($str) {
+    return dechex(crc32($str));
+  }
+
+  public function createBlockID(array &$elements) {
     // If the maximum age is zero, then caching is effectively prohibited.
     if (isset($elements['#cache']['max-age']) && $elements['#cache']['max-age'] === 0) {
-      return FALSE;
+      return '[timestamp:' . microtime() . ']';
     }
 
     $cid_parts = [];

@@ -260,7 +260,10 @@ class BlockRenderer implements MainContentRendererInterface {
     $debug = "";
     $keys = array_keys($this->blocks);
     foreach ($keys as $key) {
-      $debug = $debug. $key . '<br /> ';
+      $debug .= $key;
+      $debug .= ' ';
+      $debug .= Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($this->blocks[$key]['render_array']));
+      $debug .= '<br /> ';
     }
 
     $response->headers->set('Content-Type', 'text/html');
@@ -372,12 +375,12 @@ class BlockRenderer implements MainContentRendererInterface {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
       $name = Utilities::getElementName($block_to_render["id"]);
-      $cacheID = \Drupal::service('wcr.utilities')->createCacheID($render_array);
+      $cacheID = \Drupal::service('wcr.utilities')->createBlockID($render_array);
       // Use a custom wrapper instead of `html` theme hook.
       $html = [
         '#type' => 'polymerbare',
         'page' => $render_array,
-        '#element_name' => $name . '-' . Utilities::hashedCurrentPath(),
+        '#element_name' => $name . '-' . Utilities::hash($cacheID),
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
