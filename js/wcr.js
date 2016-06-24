@@ -5,11 +5,12 @@
   var blocks = {};
   var regionList = {};
   var currentPath = '';
+
   function getBaseURL() {
     var pathArray = location.href.split( '/' );
     var protocol = pathArray[0];
     var host = pathArray[2];
-    var url = protocol + '//' + host + '/';
+    var url = protocol + '//' + host;
     return url;
   }
 
@@ -17,20 +18,22 @@
     baseURL = drupalURL;
   }
 
-  function getBlockURL(block, internalURL) {
-    return baseURL + internalURL + "?_wrapper_format=drupal_block&block=" + block + '&mode=bare';
+  function getBlockURL(block, internalURLObject) {
+    var tmp = $.extend(true, {} ,internalURLObject); //TODO: remove reliance on jQuery
+    tmp.params['_wrapper_format'] = 'drupal_block';
+    tmp.params['block'] = block;
+    tmp.params['mode'] = 'bare';
+
+    return baseURL + tmp.internalPath();
   }
 
-  function getCurrentInternalURL() {
-    return location.pathname;
-  }
 
   function importElement(elementName) {
     return importElementFromURL(elementName, getCurrentInternalURL());
   }
 
-  function importElementFromURL(elementName, internalURL) {
-    var url = getBlockURL(elementName, internalURL);
+  function importElementFromURL(elementName, internalURLObject) {
+    var url = getBlockURL(elementName, internalURLObject);
     var link = document.createElement('link');
     link.rel = 'import';
     link.href = url;
@@ -42,9 +45,9 @@
     document.head.removeChild(oldLink);
   }
 
-  function commandUpdate(oldElement, newElement, newPath) {
+  function commandUpdate(oldElement, newElement, newPathObject) {
     removeImport(oldElement);
-    var link = importElementFromURL(newElement.region + '/' + newElement.block, newPath);
+    var link = importElementFromURL(newElement.region + '/' + newElement.block, newPathObject);
     var elementNew = document.createElement(newElement['tagname']);
     oldElement.element.parentNode.replaceChild(elementNew, oldElement.element);
     return {
@@ -58,10 +61,10 @@
     oldElement.element.remove();
   }
 
-  function commandNew(newElement, newPath) {
+  function commandNew(newElement, newPathObject) {
     var elementNew = document.createElement(newElement['tagname']);
     return {
-      link: importElementFromURL(newElement.region + '/' + newElement.block, newPath),
+      link: importElementFromURL(newElement.region + '/' + newElement.block, newPathObject),
       element: wcr.regions[newElement['region']].element.appendChild(elementNew)
     };
   }
@@ -71,7 +74,7 @@
     var regions = tmp['regions'];
     var regionNames = Object.keys(regions);
     wcr.regions = {};
-    wcr.blocks[wcr.currentPath] = {};
+    wcr.blocks[wcr.currentPath.internalPath()] = {};
     for (var i = 0; i < regionNames.length; ++i) {
       var blockNames = Object.keys(regions[regionNames[i]]);
       var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
@@ -83,7 +86,7 @@
         var elementId = regionNames[i] + '/' + blockNames[j];
         var link = importElement(elementId);
 
-        wcr.blocks[wcr.currentPath][blockNames[j]] = {
+        wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]] = {
           region: regionNames[i],
           block: blockNames[j],
           tagname: regions[regionNames[i]][blockNames[j]]['element_name'],
@@ -109,43 +112,35 @@
     }
   }
 
-  function sendRequest(internalURL, callback) {
-    var tmp = internalURL.pathname;
-    tmp['_wrapper_format'] = 'drupal_components';
+  function sendRequest(internalURLObject, callback) {
+    var tmp = $.extend(true , {}, internalURLObject);  //TODO: remove reliance on jQuery;
+    tmp.params['_wrapper_format'] = 'drupal_components';
     $.ajax({
       method: 'GET',
-      url: baseURL + internalURL.pathname,
-      data: tmp,
+      url: baseURL + tmp.pathname,
+      data: tmp.params,
     }).done(function(result) {
       console.log('success');
       //console.log(result);
-      callback(result);
+      callback(result, internalURLObject);
     }).fail(function(e){
       console.log('error');
     });
   }
 
-  function findRegion(regionName) {
-    for (var i = 0; i < wcr.regions.length; ++i) {
-      if (wcr.regions[i].name == regionName)
-        return wcr.regions[i];
-    }
-    return null;
-  }
-
-  function navigateTo(newPath, params) {
-    console.log('[WCR] Navigating to ' + newPath + 'with params ' + params);
-    sendRequest({pathname: newPath, params: params}, function(tmp) {
+  function navigateTo(newPathObject) {
+    console.log('[WCR] Navigating to ' + newPathObject.internalPath());
+    sendRequest(newPathObject, function(tmp, newPathObject) {
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
-      wcr.blocks[newPath] = [];
+      wcr.blocks[newPathObject.internalPath()] = {};
       for (var i = 0; i < regionNames.length; ++i) {
         var blockNames = Object.keys(r[regionNames[i]]);
         for (var j = 0; j < blockNames.length; ++j) {
           var elementId = regionNames[i] + '/' + blockNames[j];
          // var link = importElementFromURL(elementId, newPath);
           var elementNew = document.createElement(r[regionNames[i]][blockNames[j]]['element_name']);
-          wcr.blocks[newPath][blockNames[j]] = {
+          wcr.blocks[newPathObject.internalPath()][blockNames[j]] = {
             region: regionNames[i],
             block: blockNames[j],
             tagname: r[regionNames[i]][blockNames[j]]['element_name'],
@@ -153,26 +148,27 @@
             //link: link,
           };
 
-          if (wcr.blocks[wcr.currentPath][blockNames[j]] == null ){
+          if (wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]] == null ){
             //NEW
-            var result = commandNew(wcr.blocks[newPath][blockNames[j]], newPath);
-            wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
-            wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
+            var result = commandNew(wcr.blocks[newPathObject.internalPath()][blockNames[j]], newPathObject);
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['link'] = result['link'];
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['element'] = result['element'];
             console.log('[WCR] New block: ' + blockNames[j]);
-          } else if (wcr.blocks[wcr.currentPath][blockNames[j]]['hash'] != wcr.blocks[newPath][blockNames[j]]['hash']) {
+          } else if (wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]]['hash'] != wcr.blocks[newPathObject.internalPath()][blockNames[j]]['hash']) {
             //UPDATE
-            var result = commandUpdate(wcr.blocks[wcr.currentPath][blockNames[j]], wcr.blocks[newPath][blockNames[j]], newPath);
-            wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
-            wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
+            var result = commandUpdate(wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]], wcr.blocks[newPathObject.internalPath()][blockNames[j]], newPathObject);
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['link'] = result['link'];
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['element'] = result['element'];
             console.log('[WCR] Updated block: ' + blockNames[j]);
           } else {
             //SAME
-            wcr.blocks[newPath][blockNames[j]]['link'] = wcr.blocks[wcr.currentPath][blockNames[j]]['link'];
-            wcr.blocks[newPath][blockNames[j]]['element'] = wcr.blocks[wcr.currentPath][blockNames[j]]['element'];
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['link'] = wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]]['link'];
+            wcr.blocks[newPathObject.internalPath()][blockNames[j]]['element'] = wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]]['element'];
           }
         }
       }
-      wcr.currentPath = newPath;
+      //TODO: remove blocks
+      wcr.currentPath = newPathObject;
     });
 
   }
@@ -184,25 +180,7 @@
     wcr.blocks = {};
   }
 
-  window.wcr = {
-    getCurrentInternalURL : getCurrentInternalURL,
-    importElement: importElement,
-    loadFromMetadata: loadFromMetadata,
-    blocks: blocks,
-    regions: regionList,
-    removeAllImports: removeAllImports,
-    removeAllElements: removeAllElements,
-    convertToElementName: convertToElementName,
-    navigateTo: navigateTo,
-    currentPath: currentPath,
-  };
-
-  if (drupalSettings.componentsBlockList) {
-    wcr.currentPath = getCurrentInternalURL();
-    wcr.loadFromMetadata();
-
-  }
-
+  /* Helpers */
   function Url(url) {
     var link = document.createElement('a');
     link.href = url;
@@ -216,11 +194,31 @@
       this.fragment = link.hash.slice(1);
     }
     this.pathname = link.pathname;
-    this.params = QueryStringToHash(link.search.substring(1));
+    this.params = QueryStringToHash(link.search.substring(1)) || {};
+    this.internalPath = function () {
+      // pathname + parameters
+      if (Object.keys(this.params).length > 0) {
+        return this.pathname + '?' + $.param(this.params);
+      } else {
+        return this.pathname;
+      }
+      //TODO: remove reliance on jQuery
+    }
+    this.setInternalPath = function(internalPath) {
+
+    }
   }
 
+  function getCurrentInternalURL() {
+    return new Url(location.href);
+  }
+
+  console.log(new Url("/view2?drupalfor=2"));
+  console.log(new Url("http://127.0.0.1:8083/view2?page=1#a"));
+
   function QueryStringToHash(query) {
-    if (query == '') return null;
+    if (query == '')
+      return {};
     var hash = {};
     var vars = query.split("&");
     for (var i = 0; i < vars.length; i++) {
@@ -245,6 +243,26 @@
     return hash;
   };
 
+  window.wcr = {
+    getCurrentInternalURL : getCurrentInternalURL,
+    importElement: importElement,
+    loadFromMetadata: loadFromMetadata,
+    blocks: blocks,
+    regions: regionList,
+    removeAllImports: removeAllImports,
+    removeAllElements: removeAllElements,
+    convertToElementName: convertToElementName,
+    navigateTo: navigateTo,
+    currentPath: currentPath,
+  };
+
+  /* First page load */
+  if (drupalSettings.componentsBlockList) {
+    wcr.currentPath = getCurrentInternalURL();  //Url Object
+    wcr.loadFromMetadata();
+  }
+
+  /* Attach event to links */
   $('body').on('click', 'a', function (event) {
     //Middle click, cmd click, and ctrl click should open links as normal.
     if (event.which > 1 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -253,8 +271,13 @@
     //event.preventDefault();
     console.log(event);
     var target = new Url(event.currentTarget.href);
+    if (target.params['_wrapper_format'] == 'drupal_block') {
+      delete(target.params['_wrapper_format']);
+      if (target.params['mode']) delete(target.params['mode']);
+      if (target.params['block']) delete(target.params['block']);
+    }
 
     event.preventDefault();
-    wcr.navigateTo({pathname: target.pathname, params: });
+    wcr.navigateTo(target);
   });
 }(jQuery));

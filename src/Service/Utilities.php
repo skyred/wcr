@@ -47,7 +47,16 @@ class Utilities {
   }
 
   public static function currentPath() {
-    return Url::fromRoute('<current>')->getInternalPath();
+    $current = Url::fromRoute('<current>');
+    $params = \Drupal::request()->query->all();
+    if (isset($params['_wrapper_format']))
+      unset($params['_wrapper_format']);
+    if (isset($params['mode']))
+      unset($params['mode']);
+    if (isset($params['block']))
+      unset($params['block']);
+
+    return Url::fromRoute('<current>')->getInternalPath() . implode(':', $params);
   }
 
   public static function hashedCurrentPath() {
