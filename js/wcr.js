@@ -134,7 +134,7 @@
   }
 
   function navigateTo(newPath) {
-
+    console.log('[WCR] Navigating to ' + newPath);
     sendRequest(newPath, function(tmp) {
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
@@ -143,7 +143,7 @@
         var blockNames = Object.keys(r[regionNames[i]]);
         for (var j = 0; j < blockNames.length; ++j) {
           var elementId = regionNames[i] + '/' + blockNames[j];
-          var link = importElementFromURL(elementId, newPath);
+         // var link = importElementFromURL(elementId, newPath);
           var elementNew = document.createElement(r[regionNames[i]][blockNames[j]]['element_name']);
           wcr.blocks[newPath][blockNames[j]] = {
             region: regionNames[i],
@@ -158,11 +158,13 @@
             var result = commandNew(wcr.blocks[newPath][blockNames[j]], newPath);
             wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
             wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
+            console.log('[WCR] New block: ' + blockNames[j]);
           } else if (wcr.blocks[wcr.currentPath][blockNames[j]]['hash'] != wcr.blocks[newPath][blockNames[j]]['hash']) {
             //UPDATE
             var result = commandUpdate(wcr.blocks[wcr.currentPath][blockNames[j]], wcr.blocks[newPath][blockNames[j]], newPath);
             wcr.blocks[newPath][blockNames[j]]['link'] = result['link'];
             wcr.blocks[newPath][blockNames[j]]['element'] = result['element'];
+            console.log('[WCR] Updated block: ' + blockNames[j]);
           } else {
             //SAME
             wcr.blocks[newPath][blockNames[j]]['link'] = wcr.blocks[wcr.currentPath][blockNames[j]]['link'];
@@ -200,4 +202,33 @@
     wcr.loadFromMetadata();
 
   }
+
+  function Url(url) {
+    var link = document.createElement('a');
+    link.href = url;
+    var fragmentLength = link.hash.length;
+    this.absoluteUrl = link.href;
+    if (fragmentLength < 2) {
+      this.requestUrl = this.absoluteUrl;
+    }
+    else {
+      this.requestUrl = this.absoluteUrl.slice(0, -fragmentLength);
+      this.fragment = link.hash.slice(1);
+    }
+    this.pathname = link.pathname;
+  }
+
+
+  $('body').on('click', 'a', function (event) {
+    //Middle click, cmd click, and ctrl click should open links as normal.
+    if (event.which > 1 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+     return;
+    }
+    //event.preventDefault();
+    console.log(event);
+    var target = new Url(event.currentTarget.href);
+
+    event.preventDefault();
+    wcr.navigateTo(target.pathname);
+  });
 }(jQuery));
