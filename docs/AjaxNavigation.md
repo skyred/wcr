@@ -2,6 +2,7 @@
 ## Requirements
  - Drupal 8.1.3
  - Chrome / Chromium 50+ (Other browsers have not been tested.)
+
 ## Installation
  - Download `polymer` theme to `/themes` folder. (https://github.com/ztl8702/polymer)
  - Download `twig_polymer` module to `/modules` folder. (https://github.com/ztl8702/twig_polymer)
@@ -35,7 +36,7 @@ Go to a View page (the frontpage itself is a View), and try navigating between d
 
 Go to a View page (the frontpage itself is a View) with another View block (like the one you created before), and try navigating between different pages by clicking on any of the pagers.
 
-### Notes
+## Notes
  - The address bar is not being updated at this moment.
  - You may experience some "jumps" in the UI. This is because loading new block element takes time, and currently I am not waiting until the new block is loaded before removing the old block.
  - Back / forward button support hasn't been implemented.
