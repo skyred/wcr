@@ -169,6 +169,7 @@
       }
       //TODO: remove blocks
       wcr.currentPath = newPathObject;
+      history.pushState({}, document.title, newPathObject.internalPath());
     });
 
   }

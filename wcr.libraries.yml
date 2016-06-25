@@ -13,3 +13,4 @@ wcr:
     - core/drupal
     - core/drupalSettings
     - core/jquery
+    - twig_polymer/webcomponents-lite
