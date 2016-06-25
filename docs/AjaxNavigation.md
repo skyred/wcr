@@ -3,6 +3,7 @@
  - Drupal 8.1.3
 
 ## Installation
+ - Download this module to `/modules` folder.
  - Download `polymer` theme to `/themes` folder. (https://github.com/ztl8702/polymer)
  - Download `twig_polymer` module to `/modules` folder. (https://github.com/ztl8702/twig_polymer)
  - Goto `/modules/twig_polymer` add run `bower install` to install 3rd party dependencies.
