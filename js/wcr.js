@@ -213,10 +213,18 @@
         return this.pathname;
       }
       //TODO: remove reliance on jQuery
-    }
+    };
+
+    this.baseUrl = function (){
+      var pathArray = link.href.split( '/' );
+      var protocol = pathArray[0];
+      var host = pathArray[2];
+      var url = protocol + '//' + host;
+      return url;
+    };
     this.setInternalPath = function(internalPath) {
 
-    }
+    };
   }
 
   function getCurrentInternalURL() {
@@ -258,6 +266,12 @@
     return path.startsWith('/admin');
   }
 
+  function isSpecialUrl(url) {
+    //TODO: Simplify this function
+    var path = url.internalPath();
+    return path.startsWith('/user/logout') || path.startsWith('/user/password');
+  }
+
   window.wcr = {
     getCurrentInternalURL : getCurrentInternalURL,
     importElement: importElement,
@@ -285,7 +299,7 @@
       //event.preventDefault();
       console.log(event);
       var target = new Url(event.currentTarget.href);
-      if (!isAdminUrl(target)) {
+      if (!isAdminUrl(target) && !isSpecialUrl(target) && target.baseUrl() == wcr.currentPath.baseUrl()) {
         if (target.params['_wrapper_format'] == 'drupal_block') {
           delete(target.params['_wrapper_format']);
           if (target.params['mode']) delete(target.params['mode']);
@@ -293,6 +307,10 @@
         }
 
         event.preventDefault();
+        if (target.internalPath() == wcr.currentPath.internalPath()) {
+          console.log('[WCR] Same path, not navigating.');
+          return;
+        }
         wcr.navigateTo(target);
       }
     });
