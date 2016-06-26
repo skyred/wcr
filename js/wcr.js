@@ -168,6 +168,15 @@
         }
       }
       //TODO: remove blocks
+      var oldBlockList = Object.keys(wcr.blocks[wcr.currentPath.internalPath()]);
+      for (var i = 0; i < oldBlockList.length; ++i) {
+        if (wcr.blocks[newPathObject.internalPath()][oldBlockList[i]] == null) {
+          // REMOVE
+          commandDelete(wcr.blocks[wcr.currentPath.internalPath()][oldBlockList[i]]);
+          console.log('[WCR] removed block: ' + oldBlockList[i]);
+        }
+      }
+
       wcr.currentPath = newPathObject;
       history.pushState({}, document.title, newPathObject.internalPath());
     });
@@ -244,6 +253,11 @@
     return hash;
   };
 
+  function isAdminUrl(url) {
+    var path = url.internalPath();
+    return path.startsWith('/admin');
+  }
+
   window.wcr = {
     getCurrentInternalURL : getCurrentInternalURL,
     importElement: importElement,
@@ -261,24 +275,28 @@
   if (drupalSettings.componentsBlockList) {
     wcr.currentPath = getCurrentInternalURL();  //Url Object
     wcr.loadFromMetadata();
+
+    /* Attach event to links */
+    $('body').on('click', 'a', function (event) {
+      //Middle click, cmd click, and ctrl click should open links as normal.
+      if (event.which > 1 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+      //event.preventDefault();
+      console.log(event);
+      var target = new Url(event.currentTarget.href);
+      if (!isAdminUrl(target)) {
+        if (target.params['_wrapper_format'] == 'drupal_block') {
+          delete(target.params['_wrapper_format']);
+          if (target.params['mode']) delete(target.params['mode']);
+          if (target.params['block']) delete(target.params['block']);
+        }
+
+        event.preventDefault();
+        wcr.navigateTo(target);
+      }
+    });
+  } else {
+    console.log('WCR not enabled.');
   }
-
-  /* Attach event to links */
-  $('body').on('click', 'a', function (event) {
-    //Middle click, cmd click, and ctrl click should open links as normal.
-    if (event.which > 1 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-     return;
-    }
-    //event.preventDefault();
-    console.log(event);
-    var target = new Url(event.currentTarget.href);
-    if (target.params['_wrapper_format'] == 'drupal_block') {
-      delete(target.params['_wrapper_format']);
-      if (target.params['mode']) delete(target.params['mode']);
-      if (target.params['block']) delete(target.params['block']);
-    }
-
-    event.preventDefault();
-    wcr.navigateTo(target);
-  });
 }(jQuery));
