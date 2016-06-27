@@ -61,11 +61,17 @@
     oldElement.element.remove();
   }
 
-  function commandNew(newElement, newPathObject) {
+  function commandNew(newElement, previousElement, newPathObject) {
     var elementNew = document.createElement(newElement['tagname']);
+    if (previousElement == null) {
+      var previousNode = wcr.regions[newElement['region']].element.firstChild;
+    } else {
+      var previousNode = previousElement.element;
+    }
     return {
       link: importElementFromURL(newElement.region + '/' + newElement.block, newPathObject),
-      element: wcr.regions[newElement['region']].element.appendChild(elementNew)
+      element: wcr.regions[newElement['region']].element.insertBefore(elementNew, previousNode.nextSibling),
+      // Insert before next sibling => insert after
     };
   }
 
@@ -150,13 +156,17 @@
 
           if (wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]] == null ){
             //NEW
-            var result = commandNew(wcr.blocks[newPathObject.internalPath()][blockNames[j]], newPathObject);
+            var result = commandNew(wcr.blocks[newPathObject.internalPath()][blockNames[j]],
+                                    wcr.blocks[newPathObject.internalPath()][blockNames[j-1]],  //previous block
+                                    newPathObject);
             wcr.blocks[newPathObject.internalPath()][blockNames[j]]['link'] = result['link'];
             wcr.blocks[newPathObject.internalPath()][blockNames[j]]['element'] = result['element'];
             console.log('[WCR] New block: ' + blockNames[j]);
           } else if (wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]]['hash'] != wcr.blocks[newPathObject.internalPath()][blockNames[j]]['hash']) {
             //UPDATE
-            var result = commandUpdate(wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]], wcr.blocks[newPathObject.internalPath()][blockNames[j]], newPathObject);
+            var result = commandUpdate(wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]],
+                                       wcr.blocks[newPathObject.internalPath()][blockNames[j]],   //old block
+                                       newPathObject);
             wcr.blocks[newPathObject.internalPath()][blockNames[j]]['link'] = result['link'];
             wcr.blocks[newPathObject.internalPath()][blockNames[j]]['element'] = result['element'];
             console.log('[WCR] Updated block: ' + blockNames[j]);

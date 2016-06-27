@@ -53,6 +53,7 @@ class BlockList {
 
     return json_encode([
       'regions' => $result,
+      'activeTheme' => activeTheme
       'hashSuffix' => Utilities::hashedCurrentPath(),
     ]);
   }
