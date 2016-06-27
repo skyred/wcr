@@ -138,6 +138,11 @@
   function navigateTo(newPathObject) {
     console.log('[WCR] Navigating to ' + newPathObject.internalPath());
     sendRequest(newPathObject, function(tmp, newPathObject) {
+      // Redirect response
+      if (tmp['redirect'] != null) {
+        window.location.href = tmp['redirect'];
+        return;
+      }
       // Stop if the theme is not supported
       if (tmp['activeTheme'] != 'polymer') {
         navigateNormalTo(newPathObject);
@@ -324,7 +329,7 @@
       //event.preventDefault();
       console.log(event);
       var target = new Url(event.currentTarget.href);
-      if (!isAdminUrl(target) && !isSpecialUrl(target) && target.baseUrl() == wcr.currentPath.baseUrl()) {
+      if (!isAdminUrl(target) && /*!isSpecialUrl(target) &&*/ target.baseUrl() == wcr.currentPath.baseUrl()) {
         if (target.params['_wrapper_format'] == 'drupal_block') {
           delete(target.params['_wrapper_format']);
           if (target.params['mode']) delete(target.params['mode']);
