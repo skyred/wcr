@@ -397,6 +397,7 @@ class BlockRenderer implements MainContentRendererInterface {
         '#type' => 'polymerbare',
         'page' => $render_array,
         '#element_name' => $name . '-' . Utilities::hashedCurrentPath(),
+        //'#attached' => $this->pageAttachments,  //@todo: recheck
       ];
       $html = $this->renderer->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.

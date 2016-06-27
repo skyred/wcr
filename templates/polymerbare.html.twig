@@ -24,9 +24,11 @@
  */
 #}
 <link rel="import" href="/modules/twig_polymer/bower_components/polymer/polymer.html">
-
+<js-placeholder token="{{ placeholder_token|raw }}">
+<js-bottom-placeholder token="{{ placeholder_token|raw }}">
 {# No attachments #}
 <dom-module id="{{ element_name }}">
+
   <template>
     {{ page }}
   </template>
@@ -36,4 +38,5 @@
         is: '{{ element_name }}'
       });
   </script>
+
 </dom-module>

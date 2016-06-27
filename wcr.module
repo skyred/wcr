@@ -320,6 +320,20 @@ function wcr_preprocess_polymerbare(&$variables) {
   $variables['head_title'] = $head_title;
   // @deprecated in Drupal 8.0.0, will be removed before Drupal 9.0.0.
   $variables['head_title_array'] = $head_title;
+
+  // Create placeholder strings for these keys.
+  // @see \Drupal\Core\Render\HtmlResponseSubscriber
+  $types = [
+    'styles' => 'css',
+    'scripts' => 'js',
+    'scripts_bottom' => 'js-bottom',
+    'head' => 'head',
+  ];
+  $variables['placeholder_token'] = Crypt::randomBytesBase64(55);
+  foreach ($types as $type => $placeholder_name) {
+    $placeholder = '<' . $placeholder_name . '-placeholder token="' . $variables['placeholder_token'] . '">';
+    $variables['#attached']['html_response_attachment_placeholders'][$type] = $placeholder;
+  }
 }
 
 /**
