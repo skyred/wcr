@@ -329,7 +329,7 @@
       //event.preventDefault();
       console.log(event);
       var target = new Url(event.currentTarget.href);
-      if (!isAdminUrl(target) && /*!isSpecialUrl(target) &&*/ target.baseUrl() == wcr.currentPath.baseUrl()) {
+      if (/*!isAdminUrl(target) && !isSpecialUrl(target) &&*/ target.baseUrl() == wcr.currentPath.baseUrl()) {
         if (target.params['_wrapper_format'] == 'drupal_block') {
           delete(target.params['_wrapper_format']);
           if (target.params['mode']) delete(target.params['mode']);
