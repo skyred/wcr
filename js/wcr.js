@@ -145,7 +145,7 @@
       }
 
 
-
+      var title = tmp['title'];
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
       wcr.blocks[newPathObject.internalPath()] = {};
@@ -197,6 +197,7 @@
       }
 
       wcr.currentPath = newPathObject;
+      //document.title = title;
       history.pushState({}, document.title, newPathObject.internalPath());
     });
 

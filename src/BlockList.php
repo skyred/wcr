@@ -14,6 +14,7 @@ class BlockList {
   protected $url;
   protected $regions;
   protected $blocks;
+  protected $title;
 
   public function __construct($render_array) {
     foreach (Element::children($render_array) as $region) {
@@ -24,6 +25,7 @@ class BlockList {
         }
       }
     }
+    $this->title = '';
   }
 
   public function getUrl() {
@@ -54,9 +56,14 @@ class BlockList {
 
     return json_encode([
       'regions' => $result,
+      'title' => $this->title,
       'activeTheme' => \Drupal::theme()->getActiveTheme()->getName(),
       'hashSuffix' => Utilities::hashedCurrentPath(),
     ]);
+  }
+
+  public function setTitle($title) {
+    $this->title = $title;
   }
 
   public function addBlock($block, $key, $region) {

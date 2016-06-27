@@ -177,7 +177,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
     // Allow hooks to add attachments to $page['#attached'].
     $this->htmlRenderer->invokePageAttachmentHooks($page);
 
-    return $page;
+    return [$page, $title];
   }
 
 
@@ -187,9 +187,10 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
   public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match) {
     // Process URL parameters.
 
-    $this->page = $this->preparePage($main_content, $request, $route_match);
+    list($this->page, $title) = $this->preparePage($main_content, $request, $route_match);
 
     $blockList = new BlockList($this->page);
+    $blockList->setTitle($title);
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
     $response->headers->set('Content-Type', 'application/json');
