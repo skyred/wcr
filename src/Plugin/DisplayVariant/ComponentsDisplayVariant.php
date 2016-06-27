@@ -42,20 +42,24 @@ class ComponentsDisplayVariant extends BlockPageVariant {
 
       foreach ($blocks as $key) {
         \Drupal::service('renderer')->renderRoot($build[$region][$key]);
+        $weight = isset($build[$region][$key]['#weight']) ? $build[$region][$key]['#weight'] : null;
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
           '#element_name' => Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath(),
           '#hash' => Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($build[$region][$key])),
-          '#weight' => $build[$region][$key]['#weight'],
+          //'#weight' => $build[$region][$key]['#weight'],
           '#cache' => $build[$region][$key]['#cache'],
           '#original_cache' => $build[$region][$key]['#cache'],
           //TODO attachments
         ];
+        if ($weight !== null) {
+          $build[$region][$key]['#cache']['#weight'] == $weight;
+        }
         $build[$region][$key]['#cache']['keys'][] = ['components_display', 'block', $key];
         $build[$region][$key]['#cache']['max-age'] = 0;
         //unset($build[$region][$key]['#cache']);
       }
-      $build[$region]['#sorted'] = false;
+     // $build[$region]['#sorted'] = false;
     }
     $blockList = new BlockList($build);
     $debug = $blockList->toJson();

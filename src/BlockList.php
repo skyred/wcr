@@ -33,9 +33,10 @@ class BlockList {
   public function toJson() {
     $result = [];
 
-    foreach ($this->regions as $regionName => $blockList){
+    foreach ($this->regions as $regionName => $blockList) {
       $result[$regionName] = [];
       foreach ($blockList as $key => $block) {
+      //  $block = $blockList[$key];
         $result[$regionName][$key] = [
           'element_name' => (isset($block['#element_name']))? $block['#element_name'] : (Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath()),
           'hash' => (isset($block['#hash'])) ? $block['#hash'] : Utilities::hash(\Drupal::service('wcr.utilities')->createBlockID($block)),

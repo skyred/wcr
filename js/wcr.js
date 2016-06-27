@@ -292,7 +292,7 @@
   function isSpecialUrl(url) {
     //TODO: Simplify this function
     var path = url.internalPath();
-    return path.startsWith('/user/logout') || path.startsWith('/user/password');
+    return path.startsWith('/user/logout');
   }
 
   window.wcr = {
