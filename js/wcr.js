@@ -257,9 +257,6 @@
     window.location.href = url.href();
   }
 
-  console.log(new Url("/view2?drupalfor=2"));
-  console.log(new Url("http://127.0.0.1:8083/view2?page=1#a"));
-
   function QueryStringToHash(query) {
     if (query == '')
       return {};
