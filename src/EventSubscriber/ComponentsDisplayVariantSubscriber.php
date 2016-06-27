@@ -15,8 +15,8 @@ class ComponentsDisplayVariantSubscriber implements EventSubscriberInterface {
   public function onBlockPageDisplayVariantSelected(PageDisplayVariantSelectionEvent $event) {
     // Only activate when Block is enabled.
     $path = \Drupal::request()->getPathInfo();
-    if (0 === strpos($path, '/admin')) {
-      // TEMP: skip admin pages
+    if (\Drupal::theme()->getActiveTheme()->getName() != 'polymer') {
+      // TEMP: skip admin pages and non-supported themes
       return;
     }
     $format = \Drupal::request()->get('_wrapper_format');

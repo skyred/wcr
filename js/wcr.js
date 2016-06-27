@@ -131,12 +131,21 @@
       callback(result, internalURLObject);
     }).fail(function(e){
       console.log('error');
+      navigateNormalTo(internalURLObject);
     });
   }
 
   function navigateTo(newPathObject) {
     console.log('[WCR] Navigating to ' + newPathObject.internalPath());
     sendRequest(newPathObject, function(tmp, newPathObject) {
+      // Stop if the theme is not supported
+      if (tmp['activeTheme'] != 'polymer') {
+        navigateNormalTo(newPathObject);
+        return;
+      }
+
+
+
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
       wcr.blocks[newPathObject.internalPath()] = {};
@@ -224,6 +233,9 @@
       }
       //TODO: remove reliance on jQuery
     };
+    this.href = function () {
+      return this.baseUrl() + this.internalPath();
+    }
 
     this.baseUrl = function (){
       var pathArray = link.href.split( '/' );
@@ -239,6 +251,10 @@
 
   function getCurrentInternalURL() {
     return new Url(location.href);
+  }
+
+  function navigateNormalTo(url) {
+    window.location.href = url.href();
   }
 
   console.log(new Url("/view2?drupalfor=2"));
@@ -292,6 +308,7 @@
     removeAllElements: removeAllElements,
     convertToElementName: convertToElementName,
     navigateTo: navigateTo,
+    navigateNormalTo: navigateNormalTo,
     currentPath: currentPath,
   };
 

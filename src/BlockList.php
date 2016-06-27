@@ -53,7 +53,7 @@ class BlockList {
 
     return json_encode([
       'regions' => $result,
-      'activeTheme' => activeTheme
+      'activeTheme' => \Drupal::theme()->getActiveTheme()->getName(),
       'hashSuffix' => Utilities::hashedCurrentPath(),
     ]);
   }
