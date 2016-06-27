@@ -11,6 +11,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InsertCommand;
+use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Display\ContextAwareVariantInterface;
 use Drupal\Core\Display\PageVariantInterface;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
@@ -46,6 +47,7 @@ class BlockRenderer implements MainContentRendererInterface {
   protected $renderCache;
   protected $elementName;
   protected $htmlResponseAttachmentsProcessor;
+  protected $titleResolver;
 
   /**
    * WebComponentRenderer constructor.
@@ -57,7 +59,8 @@ class BlockRenderer implements MainContentRendererInterface {
    *
    * @internal param \Drupal\Core\Render\MainContent\MainContentRendererInterface $html_renderer
    */
-  public function __construct(MainContentRendererInterface $html_renderer,
+  public function __construct(TitleResolverInterface $title_resolver,
+                              MainContentRendererInterface $html_renderer,
                               PluginManagerInterface $display_variant_manager,
                               EventDispatcherInterface $event_dispatcher,
                               RenderCacheInterface $render_cache,
@@ -70,6 +73,7 @@ class BlockRenderer implements MainContentRendererInterface {
     $this->renderCache = $render_cache;
     $this->htmlResponseAttachmentsProcessor = $html_response_attachments_processor;
     $this->blocks = [];
+    $this->titleResolver = $title_resolver;
   }
 
   /**
