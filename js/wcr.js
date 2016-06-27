@@ -203,6 +203,7 @@
 
       wcr.currentPath = newPathObject;
       //document.title = title;
+      reattachBehaviors();
       history.pushState({}, document.title, newPathObject.internalPath());
     });
 
@@ -301,6 +302,17 @@
     return path.startsWith('/user/logout');
   }
 
+  function reattachBehaviors() {
+    // Reattach behaviors by faking an ajax request
+    var ajaxObject = Drupal.ajax({
+      url: '',
+      base: false,
+      element: false,
+      progress: false
+    });
+    ajaxObject.success({}, 'success');
+  }
+
   window.wcr = {
     getCurrentInternalURL : getCurrentInternalURL,
     importElement: importElement,
@@ -312,6 +324,7 @@
     convertToElementName: convertToElementName,
     navigateTo: navigateTo,
     navigateNormalTo: navigateNormalTo,
+    reattchBehaviors: reattachBehaviors,
     currentPath: currentPath,
   };
 
