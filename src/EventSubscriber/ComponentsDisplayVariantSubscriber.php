@@ -20,7 +20,7 @@ class ComponentsDisplayVariantSubscriber implements EventSubscriberInterface {
       return;
     }
     $format = \Drupal::request()->get('_wrapper_format');
-    if ($format != 'drupal_block' && $event->getPluginId() === 'block_page') {
+    if ($format != 'drupal_block' && $format != 'drupal_components' && $event->getPluginId() === 'block_page') {
       $event->setPluginId('components_display');
     }
   }

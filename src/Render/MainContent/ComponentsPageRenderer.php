@@ -7,6 +7,7 @@
 
 namespace Drupal\wcr\Render\MainContent;
 
+use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\wcr\BlockList;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\Crypt;
@@ -45,18 +46,23 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
   protected $renderCache;
   protected $elementName;
   protected $htmlResponseAttachmentsProcessor;
+  protected $titleResolver;
+  /**
+   * @var \Drupal\Core\Controller\TitleResolverInterface
+   */
+  private $title_resolver;
 
   /**
-   * WebComponentRenderer constructor.
-   *
-   * @param \Drupal\wcr\Render\MainContent\PluginManagerInterface $display_variant_manager
-   * @param \Drupal\wcr\Render\MainContent\EventDispatcherInterface $event_dispatcher
-   * @param \Drupal\wcr\Render\MainContent\RenderCacheInterface $render_cache
+   * ComponentsPageRenderer constructor.
+   * @param \Drupal\Core\Controller\TitleResolverInterface $title_resolver
+   * @param \Drupal\Core\Render\MainContent\MainContentRendererInterface $html_renderer
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $display_variant_manager
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Drupal\Core\Render\RenderCacheInterface $render_cache
    * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $html_response_attachments_processor
-   *
-   * @internal param \Drupal\Core\Render\MainContent\MainContentRendererInterface $html_renderer
    */
-  public function __construct(MainContentRendererInterface $html_renderer,
+  public function __construct(TitleResolverInterface $title_resolver,
+                              MainContentRendererInterface $html_renderer,
                               PluginManagerInterface $display_variant_manager,
                               EventDispatcherInterface $event_dispatcher,
                               RenderCacheInterface $render_cache,
@@ -69,6 +75,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
     $this->renderCache = $render_cache;
     $this->htmlResponseAttachmentsProcessor = $html_response_attachments_processor;
     $this->blocks = [];
+    $this->titleResolver = $title_resolver;
   }
 
   /**
@@ -91,13 +98,17 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
    *   If the selected display variant does not implement PageVariantInterface.
    */
   public function preparePage(array $main_content, Request $request, RouteMatchInterface $route_match) {
-
+    // Determine the title: use the title provided by the main content if any,
+    // otherwise get it from the routing information.
+    $get_title = function (array $main_content) use ($request, $route_match) {
+      return isset($main_content['#title']) ? $main_content['#title'] : $this->titleResolver->getTitle($request, $route_match->getRouteObject());
+    };
     // If the _controller result already is #type => page,
     // we have no work to do: The "main content" already is an entire "page"
     // (see html.html.twig).
     if (isset($main_content['#type']) && $main_content['#type'] === 'page') {
       $page = $main_content;
-      $title = "";
+      $title = $get_title($page);
     }
     // Otherwise, render it as the main content of a #type => page, by selecting
     // page display variant to do that and building that page display variant.
@@ -126,7 +137,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
           ];
       }
 
-      $title = "";
+      $title = $get_title($main_content);
 
       // Instantiate the page display, and give it the main content.
       $page_display = $this->displayVariantManager->createInstance($variant_id);

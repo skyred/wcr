@@ -43,6 +43,11 @@ class ComponentsDisplayVariant extends BlockPageVariant {
       foreach ($blocks as $key) {
         \Drupal::service('renderer')->renderRoot($build[$region][$key]);
         $weight = isset($build[$region][$key]['#weight']) ? $build[$region][$key]['#weight'] : null;
+
+        if ($key == 'polymer_content' || $key == 'polymer_page_title') { //TODO remove
+          $build[$region][$key]['#cache']['contexts'] = array_merge($build[$region][$key]['#cache']['contexts'], ['route']);
+        }
+
         $build[$region][$key] = [
           '#theme' => 'componentized_block',
           '#element_name' => Utilities::convertToElementName($key) . '-' . Utilities::hashedCurrentPath(),
@@ -56,6 +61,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
           $build[$region][$key]['#cache']['#weight'] == $weight;
         }
         $build[$region][$key]['#cache']['keys'][] = ['components_display', 'block', $key];
+
         $build[$region][$key]['#cache']['max-age'] = 0;
         //unset($build[$region][$key]['#cache']);
       }
