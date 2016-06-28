@@ -1,4 +1,4 @@
-(function($) {
+(function($, drupalSettings) {
   "use strict";
 
   /**
@@ -21,21 +21,21 @@
    * A Url has three parts:
    *  - path
    *  - params
-   *  - hash
+   *  - fragment
    *
    * @param url
    * @constructor
    */
   var Url = function (url) {
+    this.pathname = '';
+    this.params = {};
+    this.fragment = '';
+
     var link = document.createElement('a');
     link.href = url;
     var fragmentLength = link.hash.length;
     this.absoluteUrl = link.href;
-    if (fragmentLength < 2) {
-      this.requestUrl = this.absoluteUrl;
-    }
-    else {
-      this.requestUrl = this.absoluteUrl.slice(0, -fragmentLength);
+    if (fragmentLength >= 2) {
       this.fragment = link.hash.slice(1);
     }
     this.pathname = link.pathname;
@@ -44,28 +44,16 @@
 
   Url.prototype.internalPath = function () {
     // pathname + parameters
+    var ret = this.pathname;
     if (Object.keys(this.params).length > 0) {
-      return this.pathname + '?' + $.param(this.params);
-    } else {
-      return this.pathname;
+      ret = ret + '?' + $.param(this.params);
     }
+    return ret;
     //TODO: remove reliance on jQuery
   };
 
-  Url.prototype.href = function () {
-    return this.baseUrl() + this.internalPath();
-  };
-
   Url.prototype.baseUrl = function (){
-    var pathArray = link.href.split( '/' );
-    var protocol = pathArray[0];
-    var host = pathArray[2];
-    var url = protocol + '//' + host;
-    return url;
-  };
-
-  Url.prototype.setInternalPath = function(internalPath) {
-
+    return drupalSettings.path.baseUrl;
   };
 
   Url.prototype.isAdmin = function () {
@@ -78,39 +66,82 @@
     return path.startsWith('/user/logout');
   };
 
+  Url.prototype.fullUrl = function () {
+    var ret = this.baseUrl() + this.internalPath();
+    if (this.fragment.length > 0) {
+      ret = ret + '#' + this.fragment;
+    }
+  };
+
+  Url.prototype.toString = function () {
+    return this.fullUrl();
+  };
+
   /**
    * Definition of Region class.
    * @param name
    * @constructor
    */
-  var Region = function (name) {
+  var Region = function (name, element) {
     this.name = name;
-    this.element = undefined;
+    this.element = element;
   };
 
   Region.prototype.associateElement = function (node) {
     this.element = node;
-  }
+  };
 
   Region.prototype.toString = function () {
     return this.name;
-  }
+  };
+
+  /**
+   * Definition of RegionList
+   * @constructor
+   */
+  var RegionList = function () {
+    this.regions = [];
+    this.regionCount = 0;
+    this.map = [];
+  };
+
+  /**
+   * Find regions on first page load.
+   */
+  RegionList.prototype.findRegions = function () {
+    var tmp = JSON.parse(drupalSettings.componentsBlockList);
+    var regionNames = Object.keys(tmp['regions']);
+    for (var i = 0; i < regionNames.length; ++i) {
+      var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
+      this.regions.push(new Region(regionNames[i], regionElement));
+      this.map[regionNames[i]] = this.regions[i];
+      ++this.regionCount;
+    }
+  };
+
+  RegionList.prototype.get = function (regionName) {
+    return this.map[regionName];
+  };
+
+  RegionList.prototype.listAll = function (regionName) {
+    return Object.keys(this.map);
+  };
 
   /**
    * Definition of Block class
    */
-  var Block = function (name) {
+  var Block = function (name, data) {
     this.blockName = name;
-    this.elementName = '';
-    this.contextHash = '';
-    this.region = undefined;
-    this.page = undefined; // Associated PageState object
+    this.elementName = data.elementName || '';
+    this.contextHash = data.contextHash || '';
+    this.region = data.region || undefined;
+    this.page = data.pageState || wcr.historyStack.getCurrentState() || undefined; // Associated PageState object
     this.importLink = undefined;
-    this.element = undefined;
+    this.element = data.element || undefined;
   };
 
   /**
-   * Get the url for retrieve a componentized Block from BlockRenderer;
+   * Get the url for retrieving a componentized Block from BlockRenderer;
    */
   Block.prototype.getBlockUrl = function () {
     assert(this.page instanceof PageState, 'PageState not specified for Block ' + this.blockName + '.');
@@ -118,21 +149,29 @@
     // Make a copy of the url
     var tmpUrl = $.extend(true, {} ,this.page.url); //TODO: remove reliance on jQuery
     tmpUrl.params['_wrapper_format'] = 'drupal_block';
-    tmpUrl.params['block'] = block;
+    tmpUrl.params['block'] = this.region + '/' + this.blockName;
     tmpUrl.params['mode'] = 'bare';
     return tmp.fullUrl();
-  }
+  };
 
   Block.prototype.doImport = function () {
     assert(this.page instanceof PageState, 'PageState not specified for Block ' + this.blockName + '.');
-    assert(this.elementName.length > 0, 'Element name not specified for Block ' + this.blockName + '.');
 
-    var url = getBlockURL(this.elementName, this.getBlockUrl());
+    var url = this.getBlockURL();
     var link = document.createElement('link');
     link.rel = 'import';
     link.href = url;
     this.importLink = document.head.appendChild(link);
     return this.importLink;
+  };
+
+  Block.prototype.findOnPage = function () {
+    return this.element = $(this.elementName)[0];
+  };
+
+  Block.prototype.associateWith = function (node) {
+    this.element = node;
+    return this.element;
   };
 
   Block.prototype.removeImport = function () {
@@ -145,8 +184,23 @@
     assert(this.element, 'Block ' + this.blockName + ' is not on the page.');
     this.element.remove();
     this.element = undefined;
-  }
+  };
 
+  Block.prototype.placeBlockByReplace = function (node) {
+    assert(this.elementName.length > 0, 'Element name not specified for Block ' + this.blockName + '.');
+
+    var elementNew = document.createElement(this.elementName);
+    node.parentNode.replaceChild(elementNew, node);
+    this.element = elementNew;
+    return this.element;
+  };
+
+  Block.prototype.placeBlockAfter = function (node) {
+    assert(this.elementName.length > 0, 'Element name not specified for Block ' + this.blockName + '.');
+
+    var elementNew = document.createElement(this.elementName);
+    //@todo
+  };
 
   /**
    * Definition of PageState class.
@@ -157,6 +211,7 @@
     this.hashSuffix = ''; // Hash of the url, generated by the server
     //this.regionList = [];
     this.blockList = [];  // List of blocks on the page
+    this.jsAssets = [];
   };
 
   /**
@@ -164,7 +219,30 @@
    */
   PageState.prototype.getMetadata = function () {
 
-  }
+  };
+
+  PageState.prototype.constructFromMetadata = function (data) {
+    if (typeof data == 'string') {
+      data = JSON.parse(data);
+    }
+    var regions = data['regions'];
+    var regionNames = Object.keys(regions);
+    this.blockList = [];
+    for (var i = 0; i < regionNames.length; ++i) {
+      var blockNames = Object.keys(regions[regionNames[i]]);
+      for (var j = 0; j < blockNames.length; ++j) {
+        this.blockList.push(new Block(blockNames[j], {
+          region: RegionList.get(regionNames[i]),
+          elementName: regions[regionNames[i]][blockNames[j]]['element_name'],
+          contextHash: regions[regionNames[i]][blockNames[j]]['hash'],
+        }));
+      }
+    }
+  };
+
+  PageState.prototype.toString = function () {
+    return PageState.url.toString();
+  };
 
   /**
    * Definition of HistoryStack
@@ -172,6 +250,7 @@
    */
   var HistoryStack = function () {
     this.count = 0;
+    this.stack = [];
   };
 
   HistoryStack.prototype.push = function (newState) {
@@ -180,65 +259,36 @@
     this.count++;
   };
 
-  var baseURL = "";
-
-  var blocks = {};
-  var regionList = {};
-  var currentPath = '';
-
-  function getBaseURL() {
-    var pathArray = location.href.split( '/' );
-    var protocol = pathArray[0];
-    var host = pathArray[2];
-    var url = protocol + '//' + host;
-    return url;
-  }
-
-  function setDrupalURL(drupalURL){
-    baseURL = drupalURL;
-  }
-
-  function getBlockURL(block, internalURLObject) {
-    var tmp = $.extend(true, {} ,internalURLObject); //TODO: remove reliance on jQuery
-    tmp.params['_wrapper_format'] = 'drupal_block';
-    tmp.params['block'] = block;
-    tmp.params['mode'] = 'bare';
-
-    return baseURL + tmp.internalPath();
-  }
+  HistoryStack.prototype.getCurrentState = function () {
+    return this.stack[this.stack.length];
+  };
 
 
-  function importElement(elementName) {
-    return importElementFromURL(elementName, getCurrentInternalURL());
-  }
+  /**
+   * Definition of Controller
+   */
 
-  function importElementFromURL(elementName, internalURLObject) {
-    var url = getBlockURL(elementName, internalURLObject);
-    var link = document.createElement('link');
-    link.rel = 'import';
-    link.href = url;
-    return document.head.appendChild(link);
-  }
+  var Controller = function () {
+    this.baseUrl = drupalSettings.path.baseURI;
+    this.historyStack = new HistoryStack();
+    this.regionList = new RegionList();
 
+  };
 
+  Controller.prototype.commandUpdate = function (oldElement, newElement) {
+    assert(oldElement instanceof Block && newElement instanceof Block, 'Invalid types.');
+    oldElement.removeImport();
+    newElement.doImport();
+    newElement.placeBlockByReplace(oldElement.element);
+    // No need to remove old element because it is already replaced.
+  };
 
-  function commandUpdate(oldElement, newElement, newPathObject) {
-    removeImport(oldElement);
-    var link = importElementFromURL(newElement.region + '/' + newElement.block, newPathObject);
-    var elementNew = document.createElement(newElement['tagname']);
-    oldElement.element.parentNode.replaceChild(elementNew, oldElement.element);
-    return {
-      element: elementNew,
-      link: link
-    };
-  }
+  Controller.prototype.commandDelete = function(oldElement) {
+    oldElement.removeImport();
+    oldElement.removeFromPage();
+  };
 
-  function commandDelete(oldElement) {
-    removeImport(oldElement);
-    oldElement.element.remove();
-  }
-
-  function commandNew(newElement, previousElement, newPathObject) {
+  Controller.prototype.commandNew = function(newElement, previousElement, newPathObject) {
     var elementNew = document.createElement(newElement['tagname']);
     if (previousElement == null) {
       var previousNode = wcr.regions[newElement['region']].element.firstChild;
@@ -250,36 +300,28 @@
       element: wcr.regions[newElement['region']].element.insertBefore(elementNew, previousNode.nextSibling),
       // Insert before next sibling => insert after
     };
-  }
+  };
 
-  function loadFromMetadata() {
-    var tmp = JSON.parse(drupalSettings.componentsBlockList);
-    var regions = tmp['regions'];
-    var regionNames = Object.keys(regions);
-    wcr.regions = {};
-    wcr.blocks[wcr.currentPath.internalPath()] = {};
-    for (var i = 0; i < regionNames.length; ++i) {
-      var blockNames = Object.keys(regions[regionNames[i]]);
-      var regionElement = $("[data-components-display-region='" + regionNames[i] + "']")[0].parentNode;
-      wcr.regions[regionNames[i]] = {
-        name: regionNames[i],
-        element: regionElement,
-      };
-      for (var j = 0; j < blockNames.length; ++j) {
-        var elementId = regionNames[i] + '/' + blockNames[j];
-        var link = importElement(elementId);
+  Controller.prototype.firstPageLoad = function () {
+    this.regionList.findRegions();
 
-        wcr.blocks[wcr.currentPath.internalPath()][blockNames[j]] = {
-          region: regionNames[i],
-          block: blockNames[j],
-          tagname: regions[regionNames[i]][blockNames[j]]['element_name'],
-          element: $(regions[regionNames[i]][blockNames[j]]['element_name'])[0],
-          hash: regions[regionNames[i]][blockNames[j]]['hash'],
-          link: link,
-        };
-      }
+    var currentState = new PageState();
+    currentState.constructFromMetadata(drupalSettings.componentsBlockList);
+    currentState.setUrl(new Url(window.location.href));
+
+    for (var i = 0; i < currentState.blockList.length; ++i) {
+      currentState.blockList[i].findOnPage();
+      currentState.blockList[i].doImport();
     }
-  }
+
+    this.attachDrupalBehaviors();
+  };
+
+  Controller.prototype.attachDrupalBehaviors = function () {
+    //@todo per shadowdom
+    Drupal.attachBehaviors(document);
+  };
+
 
   function convertToElementName(str) {
     var tmp = str.replace(/_/g, '-');
@@ -298,18 +340,18 @@
   function sendRequest(internalURLObject, callback) {
     var tmp = $.extend(true , {}, internalURLObject);  //TODO: remove reliance on jQuery;
     tmp.params['_wrapper_format'] = 'drupal_components';
-    $.ajax({
+    return $.ajax({
       method: 'GET',
-      url: baseURL + tmp.pathname,
+      url: tmp.fullUrl(),
       data: tmp.params,
-    }).done(function(result) {
+    });/*.done(function(result) {
       console.log('success');
       //console.log(result);
       callback(result, internalURLObject);
     }).fail(function(e){
       console.log('error');
       navigateNormalTo(internalURLObject);
-    });
+    });*/
   }
 
   function navigateTo(newPathObject) {
@@ -325,7 +367,6 @@
         navigateNormalTo(newPathObject);
         return;
       }
-
 
       var title = tmp['title'];
       var r = tmp['regions'];
@@ -430,29 +471,6 @@
     return hash;
   };
 
-  //TODO: remove
-  function isAdminUrl(url) {
-    var path = url.internalPath();
-    return path.startsWith('/admin');
-  }
-
-  function isSpecialUrl(url) {
-    //TODO: Simplify this function
-    var path = url.internalPath();
-    return path.startsWith('/user/logout');
-  }
-
-  function reattachBehaviors() {
-    // Reattach behaviors by faking an ajax request
-    var ajaxObject = Drupal.ajax({
-      url: '',
-      base: false,
-      element: false,
-      progress: false
-    });
-    ajaxObject.success({}, 'success');
-  }
-
   window.wcr = {
     getCurrentInternalURL : getCurrentInternalURL,
     importElement: importElement,
@@ -500,4 +518,4 @@
   } else {
     console.log('WCR not enabled.');
   }
-}(jQuery));
+}(jQuery, drupalSettings));
