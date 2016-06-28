@@ -15,6 +15,7 @@ class BlockList {
   protected $regions;
   protected $blocks;
   protected $title;
+  protected $jsAssets;
 
   public function __construct($render_array) {
     foreach (Element::children($render_array) as $region) {
@@ -59,7 +60,12 @@ class BlockList {
       'title' => $this->title,
       'activeTheme' => \Drupal::theme()->getActiveTheme()->getName(),
       'hashSuffix' => Utilities::hashedCurrentPath(),
+      'jsAssets' => $this->jsAssets,
     ]);
+  }
+
+  public function setJsAssets($attachment) {
+    $this->jsAssets = $attachment;
   }
 
   public function setTitle($title) {

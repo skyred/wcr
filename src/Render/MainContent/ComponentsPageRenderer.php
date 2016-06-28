@@ -189,8 +189,11 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
 
     list($this->page, $title) = $this->preparePage($main_content, $request, $route_match);
 
+
     $blockList = new BlockList($this->page);
     $blockList->setTitle($title);
+    $blockList->setJsAssets(array_merge($this->page['#attached']['scripts'], $this->page['#attached']['scripts_bottom']));
+
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
     $response->headers->set('Content-Type', 'application/json');
