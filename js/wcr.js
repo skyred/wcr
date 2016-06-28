@@ -52,7 +52,7 @@
     //TODO: remove reliance on jQuery
   };
 
-  Url.prototype.baseUrl = function (){
+  Url.prototype.baseUrl = function () {
     return drupalSettings.path.baseUrl;
   };
 
@@ -218,7 +218,13 @@
    * Get metadata from the server about the blocks on the page.
    */
   PageState.prototype.getMetadata = function () {
-
+    var tmp = $.extend(true , {}, this.url);  //TODO: remove reliance on jQuery;
+    tmp.params['_wrapper_format'] = 'drupal_components';
+    return $.ajax({
+      method: 'GET',
+      url: tmp.fullUrl(),
+      data: tmp.params,
+    });
   };
 
   PageState.prototype.constructFromMetadata = function (data) {
@@ -322,22 +328,15 @@
     Drupal.attachBehaviors(document);
   };
 
-
-  function convertToElementName(str) {
-    var tmp = str.replace(/_/g, '-');
-    if (tmp.indexOf('-') == -1) {
-      tmp = 'x-' + tmp;
+  Controller.prototype.navigateNormalTo = function (url) {
+    if (typeof url == 'string') {
+      window.location.href = url;
+    } else {
+      window.location.href = url.fullUrl();
     }
-    return tmp;
-  }
+  };
 
-  function removeAllImports() {
-    for (var i = 0; i < wcr.blocks.length; ++i) {
-      removeImport(wcr.blocks[i]);
-    }
-  }
-
-  function sendRequest(internalURLObject, callback) {
+  Controller.prototype.sendRequest = function(internalURLObject) {
     var tmp = $.extend(true , {}, internalURLObject);  //TODO: remove reliance on jQuery;
     tmp.params['_wrapper_format'] = 'drupal_components';
     return $.ajax({
@@ -354,23 +353,27 @@
     });*/
   }
 
-  function navigateTo(newPathObject) {
-    console.log('[WCR] Navigating to ' + newPathObject.internalPath());
-    sendRequest(newPathObject, function(tmp, newPathObject) {
+  Controller.prototype.navigateTo = function(newPath) {
+    console.log('[WCR] Navigating to ' + newPath.fullUrl());
+
+    var newState = new PageState(newPath);
+    newState.getMetadata().done(function(tmp, newPathObject) {
       // Redirect response
       if (tmp['redirect'] != null) {
-        window.location.href = tmp['redirect'];
+        this.navigateNormalTo(tmp['redirect']);
         return;
       }
       // Stop if the theme is not supported
       if (tmp['activeTheme'] != 'polymer') {
-        navigateNormalTo(newPathObject);
+        this.navigateNormalTo(newPathObject);
         return;
       }
 
       var title = tmp['title'];
       var r = tmp['regions'];
       var regionNames = Object.keys(r);
+
+
       wcr.blocks[newPathObject.internalPath()] = {};
       for (var i = 0; i < regionNames.length; ++i) {
         var blockNames = Object.keys(r[regionNames[i]]);
@@ -425,14 +428,7 @@
       history.pushState({}, document.title, newPathObject.internalPath());
     });
 
-  }
-
-  function removeAllElements() {
-    for (var i = 0; i < wcr.blocks.length; ++i) {
-      wcr.blocks[i].element.remove();
-    }
-    wcr.blocks = {};
-  }
+  };
 
   /* Helpers */
 
@@ -440,9 +436,7 @@
     return new Url(location.href);
   }
 
-  function navigateNormalTo(url) {
-    window.location.href = url.href();
-  }
+
 
   function QueryStringToHash(query) {
     if (query == '')
