@@ -53,7 +53,11 @@
   };
 
   Url.prototype.baseUrl = function () {
-    return drupalSettings.path.baseUrl;
+    var pathArray = location.href.split( '/' );
+    var protocol = pathArray[0];
+    var host = pathArray[2];
+    var url = protocol + '//' + host;
+    return url + drupalSettings.path.baseUrl.slice(0,-1);
   };
 
   Url.prototype.isAdmin = function () {
@@ -71,6 +75,7 @@
     if (this.fragment.length > 0) {
       ret = ret + '#' + this.fragment;
     }
+    return ret;
   };
 
   Url.prototype.toString = function () {
@@ -130,12 +135,12 @@
   /**
    * Definition of Block class
    */
-  var Block = function (name, data) {
+  var Block = function (name, data, controller) {
     this.blockName = name;
     this.elementName = data.elementName || '';
     this.contextHash = data.contextHash || '';
     this.region = data.region || undefined;
-    this.page = data.pageState || wcr.historyStack.getCurrentState() || undefined; // Associated PageState object
+    this.page = data.pageState || controller.currentState || undefined; // Associated PageState object
     this.importLink = undefined;
     this.element = data.element || undefined;
   };
@@ -151,7 +156,7 @@
     tmpUrl.params['_wrapper_format'] = 'drupal_block';
     tmpUrl.params['block'] = this.region + '/' + this.blockName;
     tmpUrl.params['mode'] = 'bare';
-    return tmp.fullUrl();
+    return tmpUrl.fullUrl();
   };
 
   Block.prototype.doImport = function () {
@@ -258,7 +263,8 @@
           region: controller.regionList.get(regionNames[i]),
           elementName: regions[regionNames[i]][blockNames[j]]['element_name'],
           contextHash: regions[regionNames[i]][blockNames[j]]['hash'],
-        }));
+          pageState: this,
+        }, controller));
       }
     }
   };
@@ -305,7 +311,7 @@
   };
 
   HistoryStack.prototype.getCurrentState = function () {
-    return this.stack[this.stack.length];
+    return this.stack[this.stack.length-1];
   };
 
 
@@ -359,9 +365,9 @@
 
     currentState.constructFromMetadata(drupalSettings.componentsBlockList, this);
 
-    for (var i = 0; i < currentState.length; ++i) {
-      currentState.blockList[i].findOnPage();
-      currentState.blockList[i].doImport();
+    for (var i = 0; i < currentState.listAllBlocks().length; ++i) {
+      currentState.listAllBlocks()[i].findOnPage();
+      currentState.listAllBlocks()[i].doImport();
     }
 
     this.attachDrupalBehaviors();
@@ -404,63 +410,66 @@
     // Fetch metadata of the new PageState
     // @todo handle same page navigation
 
-    newState.getMetadata().done(function(metadata) {
-      // Redirect response
-      if (metadata['redirect'] != null) {
-        this.navigateNormalTo(metadata['redirect']);
-        return;
-      }
-      // Stop if the theme is not supported
-      if (metadata['activeTheme'] != 'polymer') {
-        this.navigateNormalTo(newPath);
-        return;
-      }
+    (function (newState, controller) {
+      newState.getMetadata().done(function (metadata) {
+        // Redirect response
+        if (metadata['redirect'] != null) {
+          this.navigateNormalTo(metadata['redirect']);
+          return;
+        }
+        // Stop if the theme is not supported
+        if (metadata['activeTheme'] != 'polymer') {
+          this.navigateNormalTo(newPath);
+          return;
+        }
 
-      newState.constructFromMetadata(metadata);
+        newState.constructFromMetadata(metadata, this);
 
-      var regionNames = this.regionList.listAll();
-      for (var i = 0; i < regionNames.length; ++i) {
-        // Diff region by region
-        var currentRegion = this.regionList.get(regionNames[i]);
-        var blockNames = Object.keys(newState.blockList[currentRegion.name]);
-        for (var j = 0; j < blockNames.length; ++j) {
-          var newBlock = newState.blockList[currentRegion.name][j];
-          if (this.currentState.getBlock(newBlock.blockName) == undefined){
-            // NEW
-            this.commandNew(newBlock,
-                            newState.blockList[currentRegion.name][blockNames[j-1]],
-                            // Previous block of the new state, must already been placed on page
-                            newPath);
-            console.log('[WCR] New block: ' + newBlock.blockName);
-          } else if (this.currentState.getBlock(newBlock.blockName)['contextHash']
-                     != newBlock['contextHash']) {
-            //UPDATE
-            this.commandUpdate(this.currentState.getBlock(newBlock.blockName),  //old block
-                               newBlock,
-                               newPath);
-            console.log('[WCR] Updated block: ' + newBlock.blockName);
-          } else {
-            //SAME
-            newBlock.associateWith(this.currentState.getBlock(newBlock.blockName));
+        var regionNames = this.regionList.listAll();
+        for (var i = 0; i < regionNames.length; ++i) {
+          // Diff region by region
+          var currentRegion = this.regionList.get(regionNames[i]);
+          var blockNames = Object.keys(newState.blockList[currentRegion.name]);
+          for (var j = 0; j < blockNames.length; ++j) {
+            var newBlock = newState.blockList[currentRegion.name][blockNames[j]];
+            if (this.currentState.getBlock(newBlock.blockName) == undefined){
+              // NEW
+              this.commandNew(newBlock,
+                newState.blockList[currentRegion.name][blockNames[j-1]],
+                // Previous block of the new state, must already been placed on page
+                newPath);
+              console.log('[WCR] New block: ' + newBlock.blockName);
+            } else if (this.currentState.getBlock(newBlock.blockName)['contextHash']
+              != newBlock['contextHash']) {
+              //UPDATE
+              this.commandUpdate(this.currentState.getBlock(newBlock.blockName),  //old block
+                newBlock,
+                newPath);
+              console.log('[WCR] Updated block: ' + newBlock.blockName);
+            } else {
+              //SAME
+              newBlock.associateWith(this.currentState.getBlock(newBlock.blockName));
+            }
           }
         }
-      }
-      //TODO: remove blocks
-      var oldBlockList = this.currentState.listAllBlocks();
-      for (var i = 0; i < oldBlockList.length; ++i) {
-        if (newState.getBlock(oldBlockList[i].name) == null) {
-          // REMOVE
-          this.commandDelete(oldBlockList[i]);
-          console.log('[WCR] removed block: ' + oldBlockList[i].blockName);
+        //TODO: remove blocks
+        var oldBlockList = this.currentState.listAllBlocks();
+        for (var i = 0; i < oldBlockList.length; ++i) {
+          if (newState.getBlock(oldBlockList[i].blockName) == null) {
+            // REMOVE
+            this.commandDelete(oldBlockList[i]);
+            console.log('[WCR] removed block: ' + oldBlockList[i].blockName);
+          }
         }
-      }
 
-      this.historyStack.push(newState);
-      this.currentState = this.historyStack.getCurrentState();
-      //document.title = title;
-      this.attachDrupalBehaviors();
-      history.pushState({}, document.title, newPath.fullUrl());
-    }.bind(this));
+        this.historyStack.push(newState);
+        this.currentState = this.historyStack.getCurrentState();
+        //document.title = title;
+        this.attachDrupalBehaviors();
+        history.pushState({}, document.title, newPath.fullUrl());
+      }.bind(controller));
+    }(newState, this));
+
 
   };
 
@@ -474,7 +483,7 @@
       // event.preventDefault();
       console.log(event);
       var target = new Url(event.currentTarget.href);
-      if (/*!isAdminUrl(target) && !isSpecialUrl(target) &&*/ target.baseUrl() == this.currentState.baseUrl()) {
+      if (/*!isAdminUrl(target) && !isSpecialUrl(target) &&*/ target.baseUrl() == this.currentState.url.baseUrl()) {
         if (target.params['_wrapper_format'] == 'drupal_block') {
           delete(target.params['_wrapper_format']);
           if (target.params['mode']) delete(target.params['mode']);
@@ -482,7 +491,7 @@
         }
 
         event.preventDefault();
-        if (target.internalPath() == this.currentState.internalPath()) {
+        if (target.internalPath() == this.currentState.url.internalPath()) {
           console.log('[WCR] Same path, not navigating.');
           return;
         }
@@ -527,6 +536,7 @@
   /* First page load */
   if (drupalSettings.componentsBlockList) {
     wcr.controller.firstPageLoad();
+    wcr.controller.bindEvents();
   } else {
     console.log('WCR not enabled.');
   }
