@@ -2,7 +2,27 @@
   "use strict";
 
   /**
+   * Assert function.
+   * Credit: http://stackoverflow.com/questions/15313418/javascript-assert
+   */
+  function assert(condition, message) {
+    if (!condition) {
+      message = message || "Assertion failed";
+      if (typeof Error !== "undefined") {
+        throw new Error(message);
+      }
+      throw message; // Fallback
+    }
+  }
+
+  /**
    * Definition of Url class.
+   *
+   * A Url has three parts:
+   *  - path
+   *  - params
+   *  - hash
+   *
    * @param url
    * @constructor
    */
@@ -49,9 +69,14 @@
   };
 
   Url.prototype.isAdmin = function () {
-    var path = url.internalPath();
+    var path = this.internalPath();
     return path.startsWith('/admin');
-  }
+  };
+
+  Url.prototype.isSpecialPath = function () {
+    var path = this.internalPath();
+    return path.startsWith('/user/logout');
+  };
 
   /**
    * Definition of Region class.
@@ -60,14 +85,68 @@
    */
   var Region = function (name) {
     this.name = name;
+    this.element = undefined;
   };
+
+  Region.prototype.associateElement = function (node) {
+    this.element = node;
+  }
+
+  Region.prototype.toString = function () {
+    return this.name;
+  }
 
   /**
    * Definition of Block class
    */
   var Block = function (name) {
-
+    this.blockName = name;
+    this.elementName = '';
+    this.contextHash = '';
+    this.region = undefined;
+    this.page = undefined; // Associated PageState object
+    this.importLink = undefined;
+    this.element = undefined;
   };
+
+  /**
+   * Get the url for retrieve a componentized Block from BlockRenderer;
+   */
+  Block.prototype.getBlockUrl = function () {
+    assert(this.page instanceof PageState, 'PageState not specified for Block ' + this.blockName + '.');
+
+    // Make a copy of the url
+    var tmpUrl = $.extend(true, {} ,this.page.url); //TODO: remove reliance on jQuery
+    tmpUrl.params['_wrapper_format'] = 'drupal_block';
+    tmpUrl.params['block'] = block;
+    tmpUrl.params['mode'] = 'bare';
+    return tmp.fullUrl();
+  }
+
+  Block.prototype.doImport = function () {
+    assert(this.page instanceof PageState, 'PageState not specified for Block ' + this.blockName + '.');
+    assert(this.elementName.length > 0, 'Element name not specified for Block ' + this.blockName + '.');
+
+    var url = getBlockURL(this.elementName, this.getBlockUrl());
+    var link = document.createElement('link');
+    link.rel = 'import';
+    link.href = url;
+    this.importLink = document.head.appendChild(link);
+    return this.importLink;
+  };
+
+  Block.prototype.removeImport = function () {
+    assert(this.importLink != undefined, 'Block ' + this.blockName + ' doesn\'t have import links associated.');
+    document.head.removeChild(this.importLink);
+    this.importLink = undefined;
+  };
+
+  Block.prototype.removeFromPage = function () {
+    assert(this.element, 'Block ' + this.blockName + ' is not on the page.');
+    this.element.remove();
+    this.element = undefined;
+  }
+
 
   /**
    * Definition of PageState class.
@@ -86,6 +165,20 @@
   PageState.prototype.getMetadata = function () {
 
   }
+
+  /**
+   * Definition of HistoryStack
+   * @constructor
+   */
+  var HistoryStack = function () {
+    this.count = 0;
+  };
+
+  HistoryStack.prototype.push = function (newState) {
+    assert(newState instanceof PageState, 'Not a valid PageState object.');
+    this.stack.push(newState);
+    this.count++;
+  };
 
   var baseURL = "";
 
@@ -127,10 +220,7 @@
     return document.head.appendChild(link);
   }
 
-  function removeImport(element) {
-    var oldLink = element.link;
-    document.head.removeChild(oldLink);
-  }
+
 
   function commandUpdate(oldElement, newElement, newPathObject) {
     removeImport(oldElement);
@@ -304,7 +394,6 @@
   }
 
   /* Helpers */
-
 
   function getCurrentInternalURL() {
     return new Url(location.href);
