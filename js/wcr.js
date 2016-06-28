@@ -350,7 +350,7 @@
     } else {
       var previousNode = previousElement.element;
     }
-
+    newElement.doImport();
     newElement.placeBlockAfter(previousNode, this);
   };
 
