@@ -46,6 +46,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
   protected $renderCache;
   protected $elementName;
   protected $htmlResponseAttachmentsProcessor;
+  protected $ajaxResponseAttachmentsProcessor;
   protected $titleResolver;
   /**
    * @var \Drupal\Core\Controller\TitleResolverInterface
@@ -60,13 +61,15 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    * @param \Drupal\Core\Render\RenderCacheInterface $render_cache
    * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $html_response_attachments_processor
+   * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $ajax_response_attachments_processor
    */
   public function __construct(TitleResolverInterface $title_resolver,
                               MainContentRendererInterface $html_renderer,
                               PluginManagerInterface $display_variant_manager,
                               EventDispatcherInterface $event_dispatcher,
                               RenderCacheInterface $render_cache,
-                              AttachmentsResponseProcessorInterface $html_response_attachments_processor) {
+                              AttachmentsResponseProcessorInterface $html_response_attachments_processor,
+                              AttachmentsResponseProcessorInterface $ajax_response_attachments_processor) {
     $this->renderer = \Drupal::service('renderer');
     $this->htmlRenderer = $html_renderer;
     $this->elementName = '';
@@ -74,6 +77,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
     $this->eventDispatcher = $event_dispatcher;
     $this->renderCache = $render_cache;
     $this->htmlResponseAttachmentsProcessor = $html_response_attachments_processor;
+    $this->ajaxResponseAttachmentsProcessor = $ajax_response_attachments_processor;
     $this->blocks = [];
     $this->titleResolver = $title_resolver;
   }
@@ -181,6 +185,30 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
   }
 
 
+  protected function getJsAssets($render_array) {
+    $tmp_response = new AjaxResponse();
+    $attachments = BubbleableMetadata::createFromRenderArray($render_array)->getAttachments();
+    $tmp_response->setAttachments(array_intersect_key($attachments, array_flip(['library'])));
+    $this->ajaxResponseAttachmentsProcessor->processAttachments($tmp_response);
+    $commands = $tmp_response->getCommands();
+
+    $html = '';
+    foreach ($commands as $item) {
+      if ($item['command'] == 'insert') {
+        $html .= $item['data'];
+      }
+    }
+    // VERY SLOW!!!
+    $doc = new \DOMDocument();
+    $doc->loadHTML($html);
+
+    foreach($doc->getElementsByTagName('script') as $script) {
+      if($script->hasAttribute('src')) {
+        echo $script->getAttribute('src') . PHP_EOL;
+      }
+    }
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -192,6 +220,9 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
 
     $blockList = new BlockList($this->page);
     $blockList->setTitle($title);
+
+    $this->getJsAssets($this->page);
+
     $blockList->setJsAssets(array_merge($this->page['#attached']['scripts'], $this->page['#attached']['scripts_bottom']));
 
     $response = new Response();

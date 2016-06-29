@@ -20,7 +20,7 @@ services:
 
   main_content_renderer.components:
     class: Drupal\wcr\Render\MainContent\ComponentsPageRenderer
-    arguments: ['@title_resolver', '@main_content_renderer.html', '@plugin.manager.display_variant', '@event_dispatcher', '@render_cache', '@html_response.attachments_processor']
+    arguments: ['@title_resolver', '@main_content_renderer.html', '@plugin.manager.display_variant', '@event_dispatcher', '@render_cache', '@html_response.attachments_processor', '@ajax_response.attachments_processor']
     tags:
       - { name: render.main_content_renderer, format: drupal_components }
 
