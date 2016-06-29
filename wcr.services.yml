@@ -24,6 +24,11 @@ services:
     tags:
       - { name: render.main_content_renderer, format: drupal_components }
 
+  wcr.html_response_subscriber:
+    class: Drupal\wcr\EventSubscriber\HtmlResponseSubscriber
+    tags:
+      - { name: event_subscriber }
+
   wcr.page_display_variant_subscriber.components:
     class: Drupal\wcr\EventSubscriber\ComponentsDisplayVariantSubscriber
     tags:

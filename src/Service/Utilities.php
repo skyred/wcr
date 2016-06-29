@@ -7,8 +7,10 @@
 
 namespace Drupal\wcr\Service;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextsManager;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Drupal\wcr\BlockList;
 
@@ -81,5 +83,36 @@ class Utilities {
         ->applyTo($elements);
     }
     return implode(':', $cid_parts);
+  }
+
+
+
+  public static function getJsAssetsFromRenderArray($render_array) {
+    $attachments = BubbleableMetadata::createFromRenderArray($render_array)->getAttachments();
+    return self::getJsAssetsFromMetadata($attachments);
+  }
+  public static function getJsAssetsFromMetadata($attachments) {
+    $tmp_response = new AjaxResponse();
+    $tmp_response->setAttachments(array_intersect_key($attachments, array_flip(['library'])));
+    \Drupal::service('ajax_response.attachments_processor')->processAttachments($tmp_response);
+    $commands = $tmp_response->getCommands();
+
+    $html = '';
+    foreach ($commands as $item) {
+      if ($item['command'] == 'insert') {
+        $html .= $item['data'];
+      }
+    }
+    // VERY SLOW!!!
+    $scripts = [];
+    $doc = new \DOMDocument();
+    $doc->loadHTML($html);
+
+    foreach($doc->getElementsByTagName('script') as $script) {
+      if($script->hasAttribute('src')) {
+        $scripts[] = $script->getAttribute('src');
+      }
+    }
+    return $scripts;
   }
 }

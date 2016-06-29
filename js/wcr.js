@@ -295,6 +295,21 @@
     return ret;
   };
 
+  PageState.prototype.setJsAssets = function (array) {
+    for (var i = 0; i < array.length; ++ i) {
+      this.jsAssets[array[i]] = true;
+    }
+  };
+
+  PageState.prototype.copyJsAssetsFrom = function (pageState) {
+    assert(pageState instanceof PageState, 'Invalid type.');
+    this.jsAssets = $.extend(true, {}, pageState.jsAssets);
+  };
+
+  PageState.prototype.checkJs = function (scr) {
+    return (this.jsAssets[scr] == true);
+  };
+
   /**
    * Definition of HistoryStack
    * @constructor
@@ -369,6 +384,8 @@
       currentState.listAllBlocks()[i].findOnPage();
       currentState.listAllBlocks()[i].doImport();
     }
+
+    currentState.setJsAssets(drupalSettings.jsAssets);
 
     this.attachDrupalBehaviors();
   };
@@ -461,6 +478,18 @@
             console.log('[WCR] removed block: ' + oldBlockList[i].blockName);
           }
         }
+
+        // Js Checking
+        for (var i = 0; i < metadata['jsAssets'].length; ++ i) {
+          if (!this.currentState.checkJs(metadata['jsAssets'][i])) {
+            console.log('[WCR] load new JS:' + metadata['jsAssets'][i]);
+          } else {
+            console.log('[WCR] js already exist' + metadata['jsAssets'][i]);
+          }
+        }
+        newState.copyJsAssetsFrom(this.currentState);
+        newState.setJsAssets(metadata['jsAssets']);
+
 
         this.historyStack.push(newState);
         this.currentState = this.historyStack.getCurrentState();

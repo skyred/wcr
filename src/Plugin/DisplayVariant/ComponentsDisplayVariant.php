@@ -68,6 +68,7 @@ class ComponentsDisplayVariant extends BlockPageVariant {
      // $build[$region]['#sorted'] = false;
     }
     $blockList = new BlockList($build);
+    //$blockList->setJsAssets(Utilities::getJsAssetsFromRenderArray($build));
     $debug = $blockList->toJson();
     if (!isset($build['#attached']['drupalSettings'])) {
       $build['#attached']['drupalSettings'] = [];

@@ -26,6 +26,7 @@ use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RenderEvents;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\wcr\Service\Utilities;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -185,29 +186,7 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
   }
 
 
-  protected function getJsAssets($render_array) {
-    $tmp_response = new AjaxResponse();
-    $attachments = BubbleableMetadata::createFromRenderArray($render_array)->getAttachments();
-    $tmp_response->setAttachments(array_intersect_key($attachments, array_flip(['library'])));
-    $this->ajaxResponseAttachmentsProcessor->processAttachments($tmp_response);
-    $commands = $tmp_response->getCommands();
 
-    $html = '';
-    foreach ($commands as $item) {
-      if ($item['command'] == 'insert') {
-        $html .= $item['data'];
-      }
-    }
-    // VERY SLOW!!!
-    $doc = new \DOMDocument();
-    $doc->loadHTML($html);
-
-    foreach($doc->getElementsByTagName('script') as $script) {
-      if($script->hasAttribute('src')) {
-        echo $script->getAttribute('src') . PHP_EOL;
-      }
-    }
-  }
 
   /**
    * {@inheritdoc}
@@ -220,10 +199,8 @@ class ComponentsPageRenderer implements MainContentRendererInterface {
 
     $blockList = new BlockList($this->page);
     $blockList->setTitle($title);
-
-    $this->getJsAssets($this->page);
-
-    $blockList->setJsAssets(array_merge($this->page['#attached']['scripts'], $this->page['#attached']['scripts_bottom']));
+    
+    $blockList->setJsAssets(Utilities::getJsAssetsFromRenderArray($this->page));
 
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
