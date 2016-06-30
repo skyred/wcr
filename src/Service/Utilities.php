@@ -85,12 +85,11 @@ class Utilities {
     return implode(':', $cid_parts);
   }
 
-
-
   public static function getJsAssetsFromRenderArray($render_array) {
     $attachments = BubbleableMetadata::createFromRenderArray($render_array)->getAttachments();
     return self::getJsAssetsFromMetadata($attachments);
   }
+
   public static function getJsAssetsFromMetadata($attachments) {
     $tmp_response = new AjaxResponse();
     $tmp_response->setAttachments(array_intersect_key($attachments, array_flip(['library'])));

@@ -35,7 +35,19 @@
   <script>
       Polymer({
         /* this is the element's prototype */
-        is: '{{ element_name }}'
+        is: '{{ element_name }}',
+        ready: function() {
+          var event = new CustomEvent('PolymerElementReady',
+                  {
+                      detail: {
+                          message: 'hello',
+                          time: new Date(),
+                      },
+                      bubbles: true,
+                      cancelable: true,
+                  });
+          this.dispatchEvent(event);
+        },
       });
   </script>
 

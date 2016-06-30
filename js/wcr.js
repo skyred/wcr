@@ -166,6 +166,10 @@
     var link = document.createElement('link');
     link.rel = 'import';
     link.href = url;
+    /*link.onload = function (e) {
+      console.log('import loaded ',e);
+      wcr.controller.attachDrupalBehaviors();
+    };*/
     this.importLink = document.head.appendChild(link);
     return this.importLink;
   };
@@ -382,6 +386,9 @@
 
     for (var i = 0; i < currentState.listAllBlocks().length; ++i) {
       currentState.listAllBlocks()[i].findOnPage();
+    //  currentState.listAllBlocks()[i].element.onload = function (e) {
+       // console.log('block loaded', e);
+     // };
       currentState.listAllBlocks()[i].doImport();
     }
 
@@ -566,6 +573,17 @@
   if (drupalSettings.componentsBlockList) {
     wcr.controller.firstPageLoad();
     wcr.controller.bindEvents();
+    addEventListener('HTMLImportsLoaded', function (e) {
+      console.log('HTMLImportsLoaded', e);
+    });
+    addEventListener('PolymerElementReady', function (e) {
+      console.log('polymerElementReady', e.srcElement);
+      wcr.controller.attachDrupalBehaviors(e.srcElement);
+    });
+    addEventListener('WebComponentsReady', function (e) {
+      console.log('WebComponentsReady', e, document.querySelector('textarea'));
+      wcr.controller.attachDrupalBehaviors();
+    });
   } else {
     console.log('WCR not enabled.');
   }
