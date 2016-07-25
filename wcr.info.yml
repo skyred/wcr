@@ -1,6 +1,6 @@
 name: 'Web Component Renderer'
 type: module
-description: 'Renders a part of a page as web component'
+description: 'Renders a part of a page as Web Components or other formats.'
 core: 8.x
 package: 'Web Components'
 dependencies:
