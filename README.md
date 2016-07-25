@@ -23,3 +23,12 @@ Extensibility via Plugins is in progress.
 ### Non-refresh Navigation with Componentized Blocks
 
 See [Documentation](.docs/AjaxNavigation.md)
+
+## Roadmap
+ - Plugins (HTMLMainContentFormatter)
+ - A controller for building Lazybuilder-built content (like Fragments in Symfony; need security measures)
+ - A unified API for requesting page partials (including Lazybuilder) - use sub-request to reserve-proxy to 
+ respective handlers.
+ - A CUSTOM ELEMENT for embedding
+ - UI for exporting block
+ - 
