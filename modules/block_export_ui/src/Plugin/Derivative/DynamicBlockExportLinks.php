@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\Derivative\DynamicBlockExportLinks.
+ * Contains \Drupal\block_export_ui\Plugin\Derivative\DynamicBlockExportLinks.
  */
 
-namespace Drupal\wcr\Plugin\Derivative;
+namespace Drupal\block_export_ui\Plugin\Derivative;
 
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;

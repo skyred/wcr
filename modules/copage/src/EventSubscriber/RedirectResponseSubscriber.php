@@ -1,6 +1,11 @@
 <?php
-
-namespace Drupal\copageS\EventSubscriber;
+/**
+ * @file
+ * Contains \Drupal\copage\EventSubscriber\RedirectResponseSubscriber.
+ *
+ * Turns a Redirect response to a normal 200 response so that JavaScript can handle it.
+ */
+namespace Drupal\copage\EventSubscriber;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

@@ -2,7 +2,9 @@
 
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\DisplayVariant\ComponentsDisplayVariant.
+ * Contains \Drupal\copage\Plugin\DisplayVariant\ComponentsDisplayVariant.
+ *
+ * Provides a variant plugin that contains Componentized blocks (as custom element tags).
  */
 
 namespace Drupal\copage\Plugin\DisplayVariant;
@@ -14,8 +16,6 @@ use Drupal\Core\Render\Element;
 
 
 /**
- * Provides a variant plugin that contains Componentized blocks (as custom element tags).
- *
  * @DisplayVariant(
  *   id = "components_display",
  *   admin_label = @Translation("Componentized Block page")

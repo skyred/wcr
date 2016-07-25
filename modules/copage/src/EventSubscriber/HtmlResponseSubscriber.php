@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\wcr\EventSubscriber\HtmlResponseSubscriber.
+ * Contains \Drupal\copage\EventSubscriber\HtmlResponseSubscriber.
  */
 
-namespace Drupal\wcr\EventSubscriber;
+namespace Drupal\copage\EventSubscriber;
 
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\wcr\Service\Utilities;

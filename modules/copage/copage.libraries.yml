@@ -1,5 +1,5 @@
-wcr:
-  version: "1.0.0"
+copage:
+  version: "0.1.0"
   js:
     js/copage.js: {}
   dependencies:
