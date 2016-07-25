@@ -236,7 +236,7 @@
    */
   PageState.prototype.getMetadata = function () {
     var tmp = $.extend(true , {}, this.url);  //TODO: remove reliance on jQuery;
-    tmp.params['_wrapper_format'] = 'drupal_components';
+    tmp.params['_wrapper_format'] = 'drupal_copage';
     return $.ajax({
       method: 'GET',
       url: tmp.fullUrl(),

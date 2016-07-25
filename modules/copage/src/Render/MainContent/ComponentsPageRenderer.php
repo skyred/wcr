@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\wcr\Render\MainContent\ComponentsPageRenderer.
+ * Contains \Drupal\copage\Render\MainContent\ComponentsPageRenderer.
  */
 
-namespace Drupal\wcr\Render\MainContent;
+namespace Drupal\copage\Render\MainContent;
 
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\wcr\BlockList;

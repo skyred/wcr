@@ -4,8 +4,7 @@ use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
 
 function wcr_page_attachments(array &$page) {
-  //$request = \Drupal::request();
-  $page['#attached']['library'][] = 'wcr/wcr';
+  
 }
 
 /**
@@ -25,9 +24,6 @@ function wcr_theme() {
     ],
     "polymerbare" => [
       'render element' => 'polymerbare',
-    ],
-    "componentized_block" => [
-      'render element' => 'componentized_block',
     ],
   ];
 }
@@ -332,21 +328,5 @@ function wcr_preprocess_polymerbare(&$variables) {
   foreach ($types as $type => $placeholder_name) {
     $placeholder = '<' . $placeholder_name . '-placeholder token="' . $variables['placeholder_token'] . '">';
     $variables['#attached']['html_response_attachment_placeholders'][$type] = $placeholder;
-  }
-}
-
-/**
- * Prepares variables for HTML document templates.
- *
- * Default template: html.html.twig.
- *
- * @param array $variables
- *   An associative array containing:
- *   - page: A render element representing the page.
- */
-function wcr_preprocess_componentized_block(&$variables) {
-  if (isset($variables['componentized_block']['#element_name'])) {
-    $variables['element_name'] = $variables['componentized_block']['#element_name'];
-    unset($variables['componentized_block']['#element_name']);
   }
 }

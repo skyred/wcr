@@ -5,7 +5,7 @@
  * Contains \Drupal\wcr\Plugin\DisplayVariant\ComponentsDisplayVariant.
  */
 
-namespace Drupal\wcr\Plugin\DisplayVariant;
+namespace Drupal\copage\Plugin\DisplayVariant;
 use Drupal\block\Plugin\DisplayVariant\BlockPageVariant;
 use Drupal\wcr\BlockList;
 use Drupal\wcr\Service\Utilities;

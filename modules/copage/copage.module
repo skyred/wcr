@@ -1,0 +1,34 @@
+<?php
+
+function copage_page_attachments(array &$page) {
+  //$request = \Drupal::request();
+  $page['#attached']['library'][] = 'copage/copage';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function copage_theme() {
+
+  return [
+    "componentized_block" => [
+      'render element' => 'componentized_block',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for Componentized Blocks templates.
+ *
+ * Default template: componentized_block.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - page: A render element representing the page.
+ */
+function copage_preprocess_componentized_block(&$variables) {
+  if (isset($variables['componentized_block']['#element_name'])) {
+    $variables['element_name'] = $variables['componentized_block']['#element_name'];
+    unset($variables['componentized_block']['#element_name']);
+  }
+}

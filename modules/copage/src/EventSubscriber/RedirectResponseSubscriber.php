@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\wcr\EventSubscriber;
+namespace Drupal\copageS\EventSubscriber;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

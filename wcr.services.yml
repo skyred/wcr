@@ -18,27 +18,6 @@ services:
     tags:
       - { name: render.main_content_renderer, format: drupal_block }
 
-  main_content_renderer.components:
-    class: Drupal\wcr\Render\MainContent\ComponentsPageRenderer
-    arguments: ['@title_resolver', '@main_content_renderer.html', '@plugin.manager.display_variant', '@event_dispatcher', '@render_cache', '@html_response.attachments_processor', '@ajax_response.attachments_processor']
-    tags:
-      - { name: render.main_content_renderer, format: drupal_components }
-
-  wcr.html_response_subscriber:
-    class: Drupal\wcr\EventSubscriber\HtmlResponseSubscriber
-    tags:
-      - { name: event_subscriber }
-
-  wcr.page_display_variant_subscriber.components:
-    class: Drupal\wcr\EventSubscriber\ComponentsDisplayVariantSubscriber
-    tags:
-      - { name: event_subscriber }
-
-  wcr.redirect_subscriber:
-    class: Drupal\wcr\EventSubscriber\RedirectResponseSubscriber
-    tags:
-      - { name: event_subscriber }
-
   trackable_renderer:
     class: Drupal\wcr\Render\TrackableRenderer
     arguments: ['@controller_resolver', '@theme.manager', '@plugin.manager.element_info', '@render_placeholder_generator', '@render_cache', '@request_stack', '%renderer.config%']

@@ -5,13 +5,3 @@ blockexporter:
   dependencies:
     - core/backbone
 
-wcr:
-  version: "1.0.0"
-  js:
-    js/wcr.js: {}
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/drupal.ajax
-    - core/jquery
-    - twig_polymer/webcomponents-lite

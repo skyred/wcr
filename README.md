@@ -1,4 +1,5 @@
 # Web Components Renderer
+WCR is a collection of enhancements to Drupal 8 UX using Web Components.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -20,7 +21,11 @@ See [Documentation](.docs/block-renderer.md)
 
 Extensibility via Plugins is in progress.
 
-### Non-refresh Navigation with Componentized Blocks
+### Componentized Pages (CoPage)
+
+Non-refresh Navigation with Componentized Blocks.
+
+Somewhat equivalent to RefreshLess + BigPipe.
 
 See [Documentation](.docs/AjaxNavigation.md)
 

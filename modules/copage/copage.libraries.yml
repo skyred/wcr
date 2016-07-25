@@ -1,0 +1,10 @@
+wcr:
+  version: "1.0.0"
+  js:
+    js/copage.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.ajax
+    - core/jquery
+    - twig_polymer/webcomponents-lite

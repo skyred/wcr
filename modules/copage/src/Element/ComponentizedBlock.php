@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Element\ComponentizedBlock.
+ * Contains \Drupal\copage\Element\ComponentizedBlock.
  */
 
-namespace Drupal\wcr\Element;
+namespace Drupal\copage\Element;
 use Drupal\Core\Render\Element\RenderElement;
 
 /**

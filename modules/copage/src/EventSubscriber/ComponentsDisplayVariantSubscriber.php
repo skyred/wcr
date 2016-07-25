@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Contains Drupal\wcr\EventSubscriber\ComponentsDisplayVariantSubscriber.
+ * Contains Drupal\copage\EventSubscriber\ComponentsDisplayVariantSubscriber.
  */
 
-namespace Drupal\wcr\EventSubscriber;
+namespace Drupal\copage\EventSubscriber;
 
 use Drupal\Core\Render\PageDisplayVariantSelectionEvent;
 use Drupal\Core\Render\RenderEvents;
