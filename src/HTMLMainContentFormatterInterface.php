@@ -25,6 +25,6 @@ interface HTMLMainContentFormatterInterface extends PluginInspectionInterface {
    *
    * @return Response
    */
-  public function response();
+  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match);
 
 }

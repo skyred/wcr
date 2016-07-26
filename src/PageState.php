@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains Drupal\wcr\BlockList
+ * Contains Drupal\wcr\PageState
  */
 
 namespace Drupal\wcr;
@@ -10,7 +10,7 @@ use Drupal\Core\Render\Element;
 use Drupal\wcr\Service\Utilities;
 
 
-class BlockList {
+class PageState {
   protected $url;
   protected $regions;
   protected $blocks;

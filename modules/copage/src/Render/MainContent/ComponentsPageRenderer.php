@@ -8,7 +8,7 @@
 namespace Drupal\copage\Render\MainContent;
 
 use Drupal\Core\Controller\TitleResolverInterface;
-use Drupal\wcr\BlockList;
+use Drupal\wcr\PageState;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Ajax\AjaxResponse;

@@ -9,7 +9,7 @@
 
 namespace Drupal\copage\Plugin\DisplayVariant;
 use Drupal\block\Plugin\DisplayVariant\BlockPageVariant;
-use Drupal\wcr\BlockList;
+use Drupal\wcr\PageState;
 use Drupal\wcr\Service\Utilities;
 
 use Drupal\Core\Render\Element;
