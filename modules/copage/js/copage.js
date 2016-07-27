@@ -153,9 +153,9 @@
 
     // Make a copy of the url
     var tmpUrl = $.extend(true, {} ,this.page.url); //TODO: remove reliance on jQuery
-    tmpUrl.params['_wrapper_format'] = 'drupal_block';
-    tmpUrl.params['block'] = this.region + '/' + this.blockName;
-    tmpUrl.params['mode'] = 'bare';
+    tmpUrl.params['_wrapper_format'] = 'drupal_wcr';
+    tmpUrl.params['_wcr_block'] = this.region + '/' + this.blockName;
+    tmpUrl.params['_wcr_mode'] = 'polymer_bare';
     return tmpUrl.fullUrl();
   };
 
@@ -520,10 +520,14 @@
       console.log(event);
       var target = new Url(event.currentTarget.href);
       if (/*!isAdminUrl(target) && !isSpecialUrl(target) &&*/ target.baseUrl() == this.currentState.url.baseUrl()) {
-        if (target.params['_wrapper_format'] == 'drupal_block') {
+        if (target.params['_wrapper_format'] == 'drupal_wcr') {
           delete(target.params['_wrapper_format']);
-          if (target.params['mode']) delete(target.params['mode']);
-          if (target.params['block']) delete(target.params['block']);
+          // Remove all wcr parameters.
+          for (var i = 0; i < Object.keys(target.params).length; ++i){
+            if (Object.keys(target.params)[i].startsWith('_wcr_')){
+              delete(target.params[Object.keys(target.params)[i]]);
+            }
+          }
         }
 
         event.preventDefault();

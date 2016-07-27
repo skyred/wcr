@@ -1,11 +1,13 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\Polymer.
+ * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\SingleBlockRest.
  */
 
 namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
@@ -18,11 +20,11 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * Returns a list of all blocks on the page.
  *
  * @HTMLMainContentFormatter(
- *   id = "singleblock",
- *   name = @Translation("Single Block"),
+ *   id = "block_rest"
+ *   name = @Translation("Single Block REST"),
  * )
  */
-class SingleBlock extends HTMLMainContentFormatterBase {
+class SingleBlockRest extends HTMLMainContentFormatterBase {
 
   use PagePreparationTrait;
   use BlockPreparationTrait;
@@ -44,9 +46,8 @@ class SingleBlock extends HTMLMainContentFormatterBase {
 
       // Use a custom wrapper instead of `html` theme hook.
       $html = [
-        '#type' => 'wcrhtml',
+        '#type' => 'bodyonly',
         'page' => $render_array,
-        '#attached' => $this->pageAttachments,
       ];
       $html = $this->getRenderer()->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
@@ -54,9 +55,15 @@ class SingleBlock extends HTMLMainContentFormatterBase {
       // url.query_args
       $html['#cache']['tags'][] = 'rendered';
 
+      $head = $this->renderAttachments($this->pageAttachments);
+
       $this->getRenderer()->renderRoot($html);
-      $response = new HtmlResponse($html, 200, [
-        'Content-Type' => 'text/html; charset=UTF-8',
+      $response = new AjaxResponse([
+        "content" => $html["#markup"],
+        "attachments" => $head,
+      ], 200, [
+        'Content-Type' => 'application/json; charset=UTF-8',
+        'Access-Control-Allow-Origin' => '*',
       ]);
       return $response;
     }

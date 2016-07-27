@@ -4,9 +4,10 @@
  * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\BlockListRest.
  */
 
-namespace Drupal\wcr\Plugin\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
 
-use Drupal\wcr\HTMLMainContentFormatterBase;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,19 +18,18 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * @HTMLMainContentFormatter(
  *   id = "blocklist_rest",
  *   name = @Translation("BlockList REST"),
- *   command = "list_rest"
  * )
  */
-class Polymer extends HTMLMainContentFormatterBase {
+class BlockListRest extends BlockList {
 
-  public function response(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    //  Use a Symfony response object to have complete control over the response.
+  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
+    $this->prepareBlocks($main_content, $request, $route_match);
+
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
     $keys = array_keys($this->blocks);
     $response->headers->set('Content-Type', 'application/json');
     $response->setContent(\json_encode($keys));
-    return $response;($debug);
     return $response;
   }
     

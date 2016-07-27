@@ -38,10 +38,4 @@ class Flavor extends Plugin {
    */
   public $name;
 
-  /**
-   * The command to trigger this plugin.
-   *
-   * @var string
-   */
-  public $command;
 }
