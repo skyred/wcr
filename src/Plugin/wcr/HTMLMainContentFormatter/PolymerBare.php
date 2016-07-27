@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * Returns a list of all blocks on the page.
  *
  * @HTMLMainContentFormatter(
- *   id = "polymer-bare",
+ *   id = "polymer_bare",
  *   name = @Translation("Polymer Element Bare"),
  * )
  */
@@ -37,6 +37,7 @@ class PolymerBare extends HTMLMainContentFormatterBase {
 
     $this->page = $this->preparePage($main_content, $request, $route_match);
     $this->blocks = $this->getBlocks($this->page);
+    $this->pageAttachments = $this->prepareAttachments($this->page);
 
     return $this->generateResponse($this->blocks[$block_requested]);
   }
