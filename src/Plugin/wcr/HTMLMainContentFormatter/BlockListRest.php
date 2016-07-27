@@ -23,7 +23,8 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 class BlockListRest extends BlockList {
 
   public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    $this->prepareBlocks($main_content, $request, $route_match);
+    $this->page = $this->preparePage($main_content, $request, $route_match);
+    $this->blocks = $this->getBlocks($this->page);
 
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);

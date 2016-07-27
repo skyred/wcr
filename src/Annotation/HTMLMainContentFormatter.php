@@ -21,7 +21,7 @@
   * @Annotation
   **/
 
-class Flavor extends Plugin {
+class HTMLMainContentFormatter extends Plugin {
   /**
    * The plugin ID.
    *

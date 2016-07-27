@@ -25,6 +25,7 @@ services:
 
   plugin.manager.views.html_main_content_formatter:
     class: Drupal\wcr\Plugin\HTMLMainContentFormatterManager
+    parent: default_plugin_manager
 
   main_content_renderer.block:
     class: Drupal\wcr\Render\MainContent\BlockRenderer

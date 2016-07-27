@@ -26,7 +26,7 @@ class HTMLMainContentFormatterManager extends DefaultPluginManager {
     parent::__construct('Plugin/wcr/HTMLMainContentFormatter',
                         $namespaces,
                         $module_handler,
-                        'Drupal\wcr\Plugin\HTMLMainContentFormattersInterface',
+                        'Drupal\wcr\Plugin\HTMLMainContentFormatterInterface',
                         'Drupal\wcr\Annotation\HTMLMainContentFormatter');
 
     $this->alterInfo('html_main_content_formatter_info');

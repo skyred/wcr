@@ -27,13 +27,16 @@ class Polymer extends HTMLMainContentFormatterBase {
   use BlockPreparationTrait;
 
   protected $elementName;
+  protected $blocks;
 
   public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
     // Get parameters.
     $elementName = $request->get("_wcr_element_name");
     $block_requested = $request->get("_wcr_block");
 
-    $this->prepareBlocks($main_content, $request, $route_match);
+    $this->page = $this->preparePage($main_content, $request, $route_match);
+    $this->blocks = $this->getBlocks($this->page);
+
     return $this->generateResponse($this->blocks[$block_requested], $elementName);
   }
 

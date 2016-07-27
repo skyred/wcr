@@ -8,10 +8,10 @@ namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
 
 use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
 use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\PagePreparationTrait;
+use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\BlockPreparationTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Service\Utilities;
 use Drupal\Core\Render\BubbleableMetadata;
@@ -25,26 +25,34 @@ use Drupal\Core\Render\BubbleableMetadata;
  * )
  */
 class BlockList extends HTMLMainContentFormatterBase {
-  use PagePreparationTrait;
-  use BlockPreparationTrait;
+  use PagePreparationTrait, BlockPreparationTrait;
+
+  protected $blocks;
 
   private function generateResponse() {
     // Use a Symfony response object to have complete control over the response.
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
 
-    $debug = "";
+    $debug = '<table>';
+
+    $debug .= '<tr>'
+             .'<td>key</td>'
+             .'<td>hash</td>'
+             .'<td>blockID</td>'
+             .'</tr>';
     $keys = array_keys($this->blocks);
     foreach ($keys as $key) {
-      $debug .= $key;
-      $debug .= ' ';
-      $debug .= Utilities::hash($this->wcrUtilities->createBlockID($this->blocks[$key]['render_array']));
+      $debug .= '<tr>';
+      $debug .= '<td>' . $key . '</td>';
+      $debug .= '<td>' . Utilities::hash($this->wcrUtilities->createBlockID($this->blocks[$key]['render_array'])) . '</td>';
       $tmp = $this->blocks[$key]['render_array'];
       $this->getRenderer()->renderRoot($tmp);
       $region_metadata = BubbleableMetadata::createFromRenderArray($tmp);
-      $debug .= ' ' . $this->wcrUtilities->createBlockID($tmp);
-      $debug .= '<br /> ';
+      $debug .= '<td>' . $this->wcrUtilities->createBlockID($tmp) . '</td>';
+      $debug .= '</td> ';
     }
+    $debug .= '</table>';
 
     $response->headers->set('Content-Type', 'text/html');
     $response->setContent($debug);
@@ -55,7 +63,8 @@ class BlockList extends HTMLMainContentFormatterBase {
    * @inheritdoc
    */
   public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    $this->prepareBlocks($main_content, $request, $route_match);
+    $this->page = $this->preparePage($main_content, $request, $route_match);
+    $this->blocks = $this->getBlocks($this->page);
 
     return $this->generateResponse();
   }

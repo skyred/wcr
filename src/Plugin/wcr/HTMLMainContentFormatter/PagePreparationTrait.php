@@ -158,6 +158,11 @@ trait PagePreparationTrait {
     }
     return $result;
   }
+  protected function prepareAttachments() {
+    $this->getRenderer()->renderRoot($preparedPage);
+    // Save the full assets of the page.
+    $this->pageAttachments = $preparedPage['#attached'];
+  }
 
   protected function getDisplayVariantManager() {
     if (!isset($this->displayVariantManager)) {
