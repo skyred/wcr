@@ -22,6 +22,7 @@ use Drupal\Core\Render\BubbleableMetadata;
  * @HTMLMainContentFormatter(
  *   id = "list",
  *   name = @Translation("BlockList"),
+ *   description = @Translation("Returns a list of block on the page."),
  * )
  */
 class BlockList extends HTMLMainContentFormatterBase {

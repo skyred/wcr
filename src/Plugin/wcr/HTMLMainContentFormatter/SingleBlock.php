@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * @HTMLMainContentFormatter(
  *   id = "singleblock",
  *   name = @Translation("Single Block"),
+ *   description = @Translation("Returns an HTML page with only one block."),
  * )
  */
 class SingleBlock extends HTMLMainContentFormatterBase {

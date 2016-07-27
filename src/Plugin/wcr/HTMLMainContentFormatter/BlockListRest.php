@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * @HTMLMainContentFormatter(
  *   id = "blocklist_rest",
  *   name = @Translation("BlockList REST"),
+ *   description = @Translation("Returns a list of block on the page in JSON format."),
  * )
  */
 class BlockListRest extends BlockList {

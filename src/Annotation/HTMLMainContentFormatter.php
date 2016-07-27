@@ -38,4 +38,13 @@ class HTMLMainContentFormatter extends Plugin {
    */
   public $name;
 
+  /**
+   * The description of the formatter.
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
+   */
+  public $description;
+
 }

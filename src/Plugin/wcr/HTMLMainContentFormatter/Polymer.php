@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * @HTMLMainContentFormatter(
  *   id = "polymer",
  *   name = @Translation("Polymer Element"),
+ *   description = @Translation("Returns a block wrappered as Polymer element."),
  * )
  */
 class Polymer extends HTMLMainContentFormatterBase {

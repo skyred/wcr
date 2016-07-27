@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  * @HTMLMainContentFormatter(
  *   id = "block_rest",
  *   name = @Translation("Single Block REST"),
+ *   description = @Translation("Returns a block's markup and attachments in JSON format."),
  * )
  */
 class SingleBlockRest extends HTMLMainContentFormatterBase {
