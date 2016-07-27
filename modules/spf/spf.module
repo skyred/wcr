@@ -1,0 +1,7 @@
+<?php
+
+function spf_page_attachments(array &$page) {
+  //$request = \Drupal::request();
+  $page['#attached']['library'][] = 'spf/init';
+}
+

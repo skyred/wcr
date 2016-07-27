@@ -57,7 +57,7 @@ class SPF extends HTMLMainContentFormatterBase {
     $response->headers->set('Access-Control-Allow-Origin', '*');
 
     $response->setContent(\json_encode([
-      "body" => $render_array["#markup"],
+      "body" => ['page-wrapper'=>$render_array["#markup"]],
       "head" => $attachments['head'] . $attachments['scripts'],
       "foot" => $attachments['scripts_bottom'],
       "title" => 'test title',

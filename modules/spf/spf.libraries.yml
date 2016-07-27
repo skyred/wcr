@@ -1,0 +1,11 @@
+spf:
+  version: "1.0.0"
+  js:
+    js/vendor/spf/spf-debug.js: { weight: -200 }
+
+init:
+  version: "1.0.0"
+  js:
+    js/init.js: {}
+  dependencies:
+    - spf/spf
