@@ -6,6 +6,7 @@
 
 namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
@@ -35,6 +36,7 @@ class SingleBlock extends HTMLMainContentFormatterBase {
     // Render response.
     $this->page = $this->preparePage($main_content, $request, $route_match);
     $this->blocks = $this->getBlocks($this->page);
+    $this->pageAttachments = $this->prepareAttachments($this->page);
 
     return $this->generateResponse($this->blocks[$block_requested]);
   }

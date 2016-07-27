@@ -37,6 +37,7 @@ class SingleBlockRest extends HTMLMainContentFormatterBase {
     // Render response.
     $this->page = $this->preparePage($main_content, $request, $route_match);
     $this->blocks = $this->getBlocks($this->page);
+    $this->pageAttachments = $this->prepareAttachments($this->page);
 
     return $this->generateResponse($this->blocks[$block_requested]);
   }
