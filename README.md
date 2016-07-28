@@ -24,7 +24,7 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
    - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=singleblock&_wcr_block={Block ID}` to request URL. Use the Block ID you see in the output using the `Block List` format.
  - Polymer Element: wraps a block as a Polymer element definition, so that it can be embedded on pages via HTML Import and Custom Element tags. This also allows for refreshless-like navigation which I introduced in a previous post. 
    - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=lis&_wcr_block={Block ID}t` to request URL.
- - SPF: outputs JSON response compatible with Youtube's Structured Page Fragments framework. This can also be used to acheive refreshless-like navigation. There is an issue (https://www.drupal.org/node/2774507) that I've created about SPF and RefressLess.
+ - SPF: outputs JSON response compatible with Youtube's Structured Page Fragments framework. This can also be used to acheive refreshless-like navigation. 
    - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=spf` to request URL.
 
 YOu can also create your own format via Plugin:
