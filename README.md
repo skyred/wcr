@@ -6,20 +6,30 @@ WCR is a collection of enhancements to Drupal 8 UX using Web Components.
 ## Features
 
 - [Features](#features)
-  - [BlockRenderer](#blockrenderer)
-  - [Non-refresh Navigation with Componentized Blocks](#non-refresh-navigation-with-componentized-blocks)
+  - [Render a block or specfic parts of the page](#render-a-block-or-specfic-parts-of-the-page)
+  - [Componentized Pages (CoPage)](#componentized-pages-copage)
+- [Roadmap](#roadmap)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 ## Features
 
-### BlockRenderer
-BlockRenderer aims to render any block on any page on request. For example, you may choose to render the Main Content block on the frontpage, or the Menu block on `/admin`. 
+### Render a block or specfic parts of the page
+WCR offers a ender any block on any page on request. For example, you may choose to render the Main Content block on the frontpage, or the Menu block on `/admin`. 
 
 Combined with ShadowDOM, this allows developers and users to export their Drupal blocks and embed them on external sites.
 
-See [Documentation](.docs/block-renderer.md)
+ - Block List: a list of blocks on the page requested, with their cache context. Primarily for debug purposes
+   - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=list` to request URL.
+ - Single Block: outputs an HTML page, but only with one block. This can be used for embedding via `<iframe>`.
+   - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=singleblock&_wcr_block={Block ID}` to request URL. Use the Block ID you see in the output using the `Block List` format.
+ - Polymer Element: wraps a block as a Polymer element definition, so that it can be embedded on pages via HTML Import and Custom Element tags. This also allows for refreshless-like navigation which I introduced in a previous post. 
+   - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=lis&_wcr_block={Block ID}t` to request URL.
+ - SPF: outputs JSON response compatible with Youtube's Structured Page Fragments framework. This can also be used to acheive refreshless-like navigation. There is an issue (https://www.drupal.org/node/2774507) that I've created about SPF and RefressLess.
+   - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=spf` to request URL.
 
-Extensibility via Plugins is in progress.
+YOu can also create your own format via Plugin:
+ - Implement [`HTMLMainContentFormatterInterface`](src/Plugin/wcr/HTMLMainContentFormatterInterface.php)
+ - Annotate with `@HTMLMainContentFormatter`
 
 ### Componentized Pages (CoPage)
 
@@ -27,13 +37,9 @@ Non-refresh Navigation with Componentized Blocks.
 
 Somewhat equivalent to RefreshLess + BigPipe.
 
-See [Documentation](.docs/AjaxNavigation.md)
+See [Blog Post](https://blog.radiumz.org/en/post/33/gsoc-2016-more-app-experience-drupal) | [Documentation](.docs/AjaxNavigation.md)
 
 ## Roadmap
- - Plugins (HTMLMainContentFormatter)
  - A controller for building Lazybuilder-built content (like Fragments in Symfony; need security measures)
- - A unified API for requesting page partials (including Lazybuilder) - use sub-request to reserve-proxy to 
- respective handlers.
  - A CUSTOM ELEMENT for embedding
  - UI for exporting block
- - 
