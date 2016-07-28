@@ -1,7 +1,48 @@
 <?php
 
 function spf_page_attachments(array &$page) {
-  //$request = \Drupal::request();
-  $page['#attached']['library'][] = 'spf/init';
+  $request = \Drupal::request();
+  if (!($request->get('_wcr_format') == 'spf')) {
+    $page['#attached']['library'][] = 'spf/init';
+  }
+
 }
 
+function spf_preprocess_region(&$variables) {
+  //$variables['attributes']['id'] = 'spf-' . $variables['region'];
+}
+
+function spf_preprocess_page(&$variables) {
+  $request = \Drupal::request();
+  if (!($request->get('_wcr_format') == 'spf')) {
+    $regions = \Drupal::theme()->getActiveTheme()->getRegions();
+    foreach ($regions as $region) {
+      $tmp = [
+        '#type' => 'spf_wrapper',
+        'content' => $variables['page'][$region],
+        'id' => 'spf-'. $region,
+      ];
+      $variables['page'][$region] = $tmp;
+    }
+  }
+
+
+}
+
+function spf_theme() {
+  return [
+    'spf_wrapper' => [
+      'render element' => 'spf_wrapper',
+    ],
+  ];
+}
+
+function spf_preprocess_spf_wrapper(&$variables) {
+  $variables['content'] = $variables['spf_wrapper']['content'];
+  $variables['id'] = $variables['spf_wrapper']['id'];
+}
+
+function spf_preprocess_link(&$variables) {
+  $variables[]=[];
+
+}

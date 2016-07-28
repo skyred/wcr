@@ -1,0 +1,4 @@
+spf.page_display_variant_subscriber.block:
+  class: Drupal\spf\EventSubscriber\SPFPageDisplayVariantSubscriber
+  tags:
+    - { name: event_subscriber }

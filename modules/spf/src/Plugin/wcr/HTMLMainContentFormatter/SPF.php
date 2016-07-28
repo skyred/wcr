@@ -4,7 +4,7 @@
  * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\SingleBlockRest.
  */
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\spf\Plugin\wcr\HTMLMainContentFormatter;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Cache\Cache;
@@ -49,7 +49,13 @@ class SPF extends HTMLMainContentFormatterBase {
 
     $attachments = $this->renderAttachments($this->pageAttachments);
 
-    $this->getRenderer()->renderRoot($render_array);
+    //$this->getRenderer()->renderRoot($render_array);
+
+    $body = [];
+    $regions = \Drupal::theme()->getActiveTheme()->getRegions();
+    foreach ($regions as $region) {
+      $body['spf-' . $region] = $this->getRenderer()->renderRoot($render_array[$region]);;
+    }
 
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
@@ -57,7 +63,7 @@ class SPF extends HTMLMainContentFormatterBase {
     $response->headers->set('Access-Control-Allow-Origin', '*');
 
     $response->setContent(\json_encode([
-      "body" => ['page-wrapper'=>$render_array["#markup"]],
+      "body" => $body,
       "head" => $attachments['head'] . $attachments['scripts'],
       "foot" => $attachments['scripts_bottom'],
       "title" => 'test title',

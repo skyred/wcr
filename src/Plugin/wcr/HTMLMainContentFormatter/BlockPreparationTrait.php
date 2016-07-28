@@ -16,9 +16,7 @@ trait BlockPreparationTrait {
    * Prepare all the blocks on the page.
    *
    * @param $preparedPage
-   * @internal param array $main_content
-   * @internal param \Symfony\Component\HttpFoundation\Request $request
-   * @internal param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   * @return array
    */
   protected function getBlocks($preparedPage) {
     // Iterate through all blocks.
