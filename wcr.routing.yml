@@ -1,0 +1,7 @@
+wcr.plugins:
+  path: '/admin/wcr/plugins'
+  defaults:
+    _controller: '\Drupal\wcr\Controller\AdminController::pluginList'
+    _title: 'Available Formats'
+  requirements:
+    _permission: 'access administration pages'

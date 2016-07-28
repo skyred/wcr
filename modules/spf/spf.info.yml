@@ -1,0 +1,8 @@
+name: 'SPF'
+type: module
+description: 'SPF'
+package: 'Web Components'
+core: 8.x
+dependencies:
+ - wcr
+ 

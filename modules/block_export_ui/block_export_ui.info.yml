@@ -1,0 +1,8 @@
+name: 'Block Export UI'
+type: module
+description: 'UI for exporting and embedding Drupal 8 Blocks on external sites'
+package: 'Web Components'
+core: 8.x
+dependencies:
+ - wcr
+ 

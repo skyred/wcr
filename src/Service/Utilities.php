@@ -25,10 +25,6 @@ class Utilities {
     $this->cacheContextsManager = $cache_contexts_manager;
   }
 
-  public function repeater(){
-    
-  }
-
   public static function getBlockName($block_id) {
     list($region, $name) = explode('/', $block_id);
     return $name;

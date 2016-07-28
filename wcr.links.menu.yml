@@ -1,0 +1,7 @@
+wcr.plugin_list:
+  title: 'WCR - Available Formats'
+  route_name: wcr.plugins
+  description: 'Available format plugins for Web Component Renderer.'
+  parent: system.admin_config_development
+  weight: 99
+

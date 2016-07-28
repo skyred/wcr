@@ -1,0 +1,10 @@
+copage:
+  version: "0.1.0"
+  js:
+    js/copage.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.ajax
+    - core/jquery
+    - twig_polymer/webcomponents-lite

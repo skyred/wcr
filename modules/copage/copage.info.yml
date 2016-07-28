@@ -1,0 +1,8 @@
+name: 'Componentized Pages'
+type: module
+description: 'RefreshLess-like page navigation and lazyloading using Web Components'
+package: 'Web Components'
+core: 8.x
+dependencies:
+ - wcr
+ - twig_polymer
