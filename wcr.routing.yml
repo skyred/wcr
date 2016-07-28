@@ -5,3 +5,10 @@ wcr.plugins:
     _title: 'Available Formats'
   requirements:
     _permission: 'access administration pages'
+
+wcr.lazy_builder:
+  path: '/wcr/lazy-builder'
+  defaults:
+    _controller: '\Drupal\wcr\Controller\LazyBuilderRenderController::handle'
+  requirements:
+    _permission: 'access administration pages'

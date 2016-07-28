@@ -43,6 +43,6 @@ function spf_preprocess_spf_wrapper(&$variables) {
 }
 
 function spf_preprocess_link(&$variables) {
-  $variables[]=[];
+  //$variables[]=[];
 
 }
