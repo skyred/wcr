@@ -11,7 +11,8 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\RenderArrayFormatterBase;
-use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
+use Drupal\wcr\PagePreparationTrait;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,16 +31,22 @@ class SPF extends RenderArrayFormatterBase {
   use PagePreparationTrait;
 
 
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    // Get parameters.
+  public function generateResponse(array $renderArray, array $options = []) {
+    if (!isset($options['request'])) {
+      throw new ParameterNotFoundException('request');
+    }
+
+    if (!isset($options['route_match'])) {
+      throw new ParameterNotFoundException('route_match');
+    }
     // Render response.
-    $this->page = $this->preparePage($main_content, $request, $route_match);
+    $this->page = $this->preparePage($renderArray, $options['request'], $options['route_match']);
     $this->pageAttachments = $this->prepareAttachments($this->page);
 
-    return $this->generateResponse();
+    return $this->doGenerateResponse();
   }
 
-  public function generateResponse() {
+  public function doGenerateResponse() {
 
     $render_array = $this->page;
 

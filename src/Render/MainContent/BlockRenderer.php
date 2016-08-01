@@ -57,9 +57,13 @@ class BlockRenderer implements MainContentRendererInterface {
       throw new PluginNotFoundException($mode, sprintf('The "%s" format does not exist.', $mode));
     }
     $instance = $this->pluginManager->createInstance($mode);
-    return $instance->handle($main_content, $request, $route_match);
+    // @todo Generate title.
+    $response = $instance->generateResponse($main_content, [
+                                            'request' => $request,
+                                            'route_match' => $route_match,
+                                            'title' => '']);
 
-
+    return $response;
   }
 
 

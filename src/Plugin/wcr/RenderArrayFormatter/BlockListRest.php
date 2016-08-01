@@ -8,6 +8,7 @@ namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\RenderArrayFormatterBase;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,9 +24,16 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  */
 class BlockListRest extends BlockList {
 
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    $this->page = $this->preparePage($main_content, $request, $route_match);
-    $this->blocks = $this->getBlocks($this->page);
+  public function generateResponse(array $page, array $options = []) {
+    if (!isset($options['request'])) {
+      throw new ParameterNotFoundException('request');
+    }
+
+    if (!isset($options['route_match'])) {
+      throw new ParameterNotFoundException('route_match');
+    }
+
+    $page = $this->preparePage($page, $options['request'], $options['route_match']);
 
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
@@ -34,5 +42,5 @@ class BlockListRest extends BlockList {
     $response->setContent(\json_encode($keys));
     return $response;
   }
-    
+
 }

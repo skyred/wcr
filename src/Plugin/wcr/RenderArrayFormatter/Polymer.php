@@ -10,7 +10,8 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\RenderArrayFormatterBase;
-use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
+use Drupal\wcr\PagePreparationTrait;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,19 +32,27 @@ class Polymer extends RenderArrayFormatterBase {
   protected $elementName;
   protected $blocks;
 
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    // Get parameters.
-    $elementName = $request->get("_wcr_element_name");
-    $block_requested = $request->get("_wcr_block");
+  public function generateResponse(array $main_content, array $options = []) {
+    if (!isset($options['request'])) {
+      throw new ParameterNotFoundException('request');
+    }
 
-    $this->page = $this->preparePage($main_content, $request, $route_match);
+    if (!isset($options['route_match'])) {
+      throw new ParameterNotFoundException('route_match');
+    }
+
+    // Get parameters.
+    $elementName = $options['request']->get("_wcr_element_name");
+    $block_requested = $options['request']->get("_wcr_block");
+
+    $this->page = $this->preparePage($main_content, $options['request'], $options['route_match']);
     $this->blocks = $this->getBlocks($this->page);
     $this->pageAttachments = $this->prepareAttachments($this->page);
 
-    return $this->generateResponse($this->blocks[$block_requested], $elementName);
+    return $this->doGenerateResponse($this->blocks[$block_requested], $elementName);
   }
 
-  protected function generateResponse($block_to_render, $elementName) {
+  protected function doGenerateResponse($block_to_render, $elementName) {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
 

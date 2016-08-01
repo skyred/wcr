@@ -11,7 +11,7 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\wcr\Plugin\RenderArrayFormatterBase;
-use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
+use Drupal\wcr\PagePreparationTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,25 +25,12 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
  *   description = @Translation("Returns a block's markup and attachments in JSON format."),
  * )
  */
-class SingleBlockRest extends RenderArrayFormatterBase {
+class SingleBlockRest extends SingleBlock  {
 
   use PagePreparationTrait;
   use BlockPreparationTrait;
 
-  protected $blocks;
-
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    // Get parameters.
-    $block_requested = $request->get("_wcr_block");
-    // Render response.
-    $this->page = $this->preparePage($main_content, $request, $route_match);
-    $this->blocks = $this->getBlocks($this->page);
-    $this->pageAttachments = $this->prepareAttachments($this->page);
-
-    return $this->generateResponse($this->blocks[$block_requested]);
-  }
-
-  public function generateResponse($block_to_render) {
+  protected function doGenerateResponse($block_to_render) {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
 

@@ -6,9 +6,10 @@
 
 namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
+use Drupal\wcr\PagePreparationTrait;
 use Drupal\wcr\Plugin\RenderArrayFormatterBase;
-use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
 use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\BlockPreparationTrait;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +27,7 @@ use Drupal\Core\Render\BubbleableMetadata;
  * )
  */
 class BlockList extends RenderArrayFormatterBase {
-  use PagePreparationTrait, BlockPreparationTrait;
+  use BlockPreparationTrait, PagePreparationTrait;
 
   protected $blocks;
 
@@ -37,7 +38,7 @@ class BlockList extends RenderArrayFormatterBase {
     $this->renderer = \Drupal::service("renderer");
   }
 
-  private function doGenerateResponse() {
+  protected function doGenerateResponse() {
     // Use a Symfony response object to have complete control over the response.
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
@@ -71,6 +72,16 @@ class BlockList extends RenderArrayFormatterBase {
    * @inheritdoc
    */
   public function generateResponse(array $page, array $options = []) {
+    if (!isset($options['request'])) {
+      throw new ParameterNotFoundException('request');
+    }
+
+    if (!isset($options['route_match'])) {
+      throw new ParameterNotFoundException('route_match');
+    }
+
+    $page = $this->preparePage($page, $options['request'], $options['route_match']);
+
     $this->blocks = $this->getBlocks($page);
     return $this->doGenerateResponse();
   }
