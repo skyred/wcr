@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
 use Drupal\Core\Render\PageDisplayVariantSelectionEvent;
 use Drupal\Core\Routing\RouteMatchInterface;

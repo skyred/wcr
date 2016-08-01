@@ -23,12 +23,12 @@ services:
     class: Drupal\wcr\Service\Utilities
     arguments: ['@cache_contexts_manager']
 
-  plugin.manager.views.html_main_content_formatter:
-    class: Drupal\wcr\Plugin\HTMLMainContentFormatterManager
+  plugin.manager.views.render_array_formatter:
+    class: Drupal\wcr\Plugin\RenderArrayFormatterManager
     parent: default_plugin_manager
 
   main_content_renderer.block:
     class: Drupal\wcr\Render\MainContent\BlockRenderer
-    arguments: ['@plugin.manager.views.html_main_content_formatter']
+    arguments: ['@plugin.manager.views.render_array_formatter']
     tags:
       - { name: render.main_content_renderer, format: drupal_wcr }

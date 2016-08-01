@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr;
 
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\PageDisplayVariantSelectionEvent;

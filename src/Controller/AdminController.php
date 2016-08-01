@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
-use Drupal\wcr\Plugin\HTMLMainContentFormatterManager;
+use Drupal\wcr\Plugin\RenderArrayFormatterManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,7 +25,7 @@ class AdminController extends ControllerBase {
   protected $pluginManager;
 
   public function __construct() {
-    $this->pluginManager = \Drupal::service('plugin.manager.views.html_main_content_formatter');
+    $this->pluginManager = \Drupal::service('plugin.manager.views.render_array_formatter');
   }
 
   public function pluginList() {

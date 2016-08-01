@@ -1,16 +1,16 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\Polymer.
+ * Contains \Drupal\wcr\Plugin\RenderArrayFormatter\Polymer.
  */
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
-use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\PagePreparationTrait;
+use Drupal\wcr\Plugin\RenderArrayFormatterBase;
+use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,13 +18,13 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 /**
  * Returns a list of all blocks on the page.
  *
- * @HTMLMainContentFormatter(
+ * @RenderArrayFormatter(
  *   id = "singleblock",
  *   name = @Translation("Single Block"),
  *   description = @Translation("Returns an HTML page with only one block."),
  * )
  */
-class SingleBlock extends HTMLMainContentFormatterBase {
+class SingleBlock extends RenderArrayFormatterBase {
 
   use PagePreparationTrait;
   use BlockPreparationTrait;

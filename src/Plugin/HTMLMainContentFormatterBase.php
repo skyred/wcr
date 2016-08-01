@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides Drupal\wcr\HTMLMainContentFormatterBase.
+ * Provides Drupal\wcr\RenderArrayFormatterBase.
  */
 
 namespace Drupal\wcr\Plugin;
@@ -10,7 +10,7 @@ use Drupal\Component\Plugin\PluginBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Routing\RouteMatchInterface;
 
-class HTMLMainContentFormatterBase extends PluginBase implements HTMLMainContentFormatterInterface {
+class RenderArrayFormatterBase extends PluginBase implements RenderArrayFormatterInterface {
   protected $wcrUtilities;
   
   function __construct(array $configuration, $plugin_id, $plugin_definition) {
@@ -22,7 +22,7 @@ class HTMLMainContentFormatterBase extends PluginBase implements HTMLMainContent
     return $this->pluginDefinition['name'];
   }
 
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
+  public function generateResponse(array $renderArray, array $options = []) {
     // Do nothing.
   }
 

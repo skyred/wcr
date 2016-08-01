@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Annotation\HTMLMainContentFormatter
+ * Contains \Drupal\wcr\Annotation\RenderArrayFormatter
  */
 
  namespace Drupal\wcr\Annotation;
@@ -14,14 +14,14 @@
   * Examples: Block list, a single block wrapped as Web Component,
   *           SPF format, etc.
   *
-  * Plugin Namespace: Plugin\wcr\HTMLMainContentFormatter
+  * Plugin Namespace: Plugin\wcr\RenderArrayFormatter
   *
   * @see plugin_api
   *
   * @Annotation
   **/
 
-class HTMLMainContentFormatter extends Plugin {
+class RenderArrayFormatter extends Plugin {
   /**
    * The plugin ID.
    *

@@ -7,9 +7,9 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * HTMLMainContentFormatter plugin manager.
+ * RenderArrayFormatter plugin manager.
  */
-class HTMLMainContentFormatterManager extends DefaultPluginManager {
+class RenderArrayFormatterManager extends DefaultPluginManager {
 
   /**
    * Constructs an IcecreamManager object.
@@ -23,13 +23,13 @@ class HTMLMainContentFormatterManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/wcr/HTMLMainContentFormatter',
+    parent::__construct('Plugin/wcr/RenderArrayFormatter',
                         $namespaces,
                         $module_handler,
-                        'Drupal\wcr\Plugin\HTMLMainContentFormatterInterface',
-                        'Drupal\wcr\Annotation\HTMLMainContentFormatter');
+                        'Drupal\wcr\Plugin\RenderArrayFormatterInterface',
+                        'Drupal\wcr\Annotation\RenderArrayFormatter');
 
-    $this->alterInfo('html_main_content_formatter_info');
-    $this->setCacheBackend($cache_backend, 'html_main_content_formatters');
+    $this->alterInfo('render_array_formatter_info');
+    $this->setCacheBackend($cache_backend, 'render_array_formatters');
   }
 }

@@ -9,7 +9,7 @@ namespace Drupal\wcr\Render\MainContent;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 
-use Drupal\wcr\Plugin\HTMLMainContentFormatterManager;
+use Drupal\wcr\Plugin\RenderArrayFormatterManager;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\MainContent\MainContentRendererInterface;
@@ -36,10 +36,10 @@ class BlockRenderer implements MainContentRendererInterface {
   /**
    * WebComponentRenderer constructor.
    *
-   * @param \Drupal\wcr\Plugin\HTMLMainContentFormatterManager $html_main_content_formatter_manager
+   * @param \Drupal\wcr\Plugin\RenderArrayFormatterManager $render_array_formatter_manager
    */
-  public function __construct(HTMLMainContentFormatterManager $html_main_content_formatter_manager) {
-    $this->pluginManager = $html_main_content_formatter_manager;
+  public function __construct(RenderArrayFormatterManager $render_array_formatter_manager) {
+    $this->pluginManager = $render_array_formatter_manager;
 
   }
 

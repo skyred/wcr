@@ -1,17 +1,16 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\SingleBlockRest.
+ * Contains \Drupal\wcr\Plugin\RenderArrayFormatter\Polymer.
  */
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
-use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\PagePreparationTrait;
+use Drupal\wcr\Plugin\RenderArrayFormatterBase;
+use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,31 +18,32 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 /**
  * Returns a list of all blocks on the page.
  *
- * @HTMLMainContentFormatter(
- *   id = "block_rest",
- *   name = @Translation("Single Block REST"),
- *   description = @Translation("Returns a block's markup and attachments in JSON format."),
+ * @RenderArrayFormatter(
+ *   id = "polymer",
+ *   name = @Translation("Polymer Element"),
+ *   description = @Translation("Returns a block wrappered as Polymer element."),
  * )
  */
-class SingleBlockRest extends HTMLMainContentFormatterBase {
-
+class Polymer extends RenderArrayFormatterBase {
   use PagePreparationTrait;
   use BlockPreparationTrait;
 
+  protected $elementName;
   protected $blocks;
 
   public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
     // Get parameters.
+    $elementName = $request->get("_wcr_element_name");
     $block_requested = $request->get("_wcr_block");
-    // Render response.
+
     $this->page = $this->preparePage($main_content, $request, $route_match);
     $this->blocks = $this->getBlocks($this->page);
     $this->pageAttachments = $this->prepareAttachments($this->page);
 
-    return $this->generateResponse($this->blocks[$block_requested]);
+    return $this->generateResponse($this->blocks[$block_requested], $elementName);
   }
 
-  public function generateResponse($block_to_render) {
+  protected function generateResponse($block_to_render, $elementName) {
     if (!empty($block_to_render)) {
       $render_array = $block_to_render['render_array'];
 
@@ -52,8 +52,10 @@ class SingleBlockRest extends HTMLMainContentFormatterBase {
 
       // Use a custom wrapper instead of `html` theme hook.
       $html = [
-        '#type' => 'bodyonly',
+        '#type' => 'polymer',
         'page' => $render_array,
+        '#element_name' => $elementName,
+        '#attached' => $this->pageAttachments,
       ];
       $html = $this->getRenderer()->mergeBubbleableMetadata($html, $render_array["#cache"]);
       // Add url to cache context, to prevent query arguments being ignored.
@@ -61,15 +63,9 @@ class SingleBlockRest extends HTMLMainContentFormatterBase {
       // url.query_args
       $html['#cache']['tags'][] = 'rendered';
 
-      $head = $this->renderAttachments($this->pageAttachments);
-
       $this->getRenderer()->renderRoot($html);
-      $response = new AjaxResponse([
-        "content" => $html["#markup"],
-        "attachments" => $head,
-      ], 200, [
-        'Content-Type' => 'application/json; charset=UTF-8',
-        'Access-Control-Allow-Origin' => '*',
+      $response = new HtmlResponse($html, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
       ]);
       return $response;
     }
@@ -80,5 +76,4 @@ class SingleBlockRest extends HTMLMainContentFormatterBase {
       return $response;
     }
   }
-    
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides Drupal\wcr\HTMLMainContentFormatterInterface
+ * Provides Drupal\wcr\RenderArrayFormatterInterface
  */
 
 namespace Drupal\wcr\Plugin;
@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Defines an interface for HTMLMainContentFormatter plugins.
+ * Defines an interface for RenderArrayFormatter plugins.
  */
-interface HTMLMainContentFormatterInterface extends PluginInspectionInterface {
+interface RenderArrayFormatterInterface extends PluginInspectionInterface {
 
   /**
    * Return the name of the plugin.
@@ -26,8 +26,10 @@ interface HTMLMainContentFormatterInterface extends PluginInspectionInterface {
   /**
    * Generate the response in the designated format.
    *
-   * @return Response
+   * @param array $renderArray
+   * @param array $options
+   * @return \Symfony\Component\HttpFoundation\Response
    */
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match);
+  public function generateResponse(array $renderArray, array $options = []);
 
 }

@@ -1,14 +1,14 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\BlockList.
+ * Contains \Drupal\wcr\Plugin\RenderArrayFormatter\BlockList.
  */
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
-use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
-use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\PagePreparationTrait;
-use Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter\BlockPreparationTrait;
+use Drupal\wcr\Plugin\RenderArrayFormatterBase;
+use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
+use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\BlockPreparationTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,18 +19,25 @@ use Drupal\Core\Render\BubbleableMetadata;
 /**
  * Returns a list of all blocks on the page.
  *
- * @HTMLMainContentFormatter(
+ * @RenderArrayFormatter(
  *   id = "list",
  *   name = @Translation("BlockList"),
  *   description = @Translation("Returns a list of block on the page."),
  * )
  */
-class BlockList extends HTMLMainContentFormatterBase {
+class BlockList extends RenderArrayFormatterBase {
   use PagePreparationTrait, BlockPreparationTrait;
 
   protected $blocks;
 
-  private function generateResponse() {
+  protected $renderer;
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->renderer = \Drupal::service("renderer");
+  }
+
+  private function doGenerateResponse() {
     // Use a Symfony response object to have complete control over the response.
     $response = new Response();
     $response->setStatusCode(Response::HTTP_OK);
@@ -48,7 +55,7 @@ class BlockList extends HTMLMainContentFormatterBase {
       $debug .= '<td>' . $key . '</td>';
       $debug .= '<td>' . Utilities::hash($this->wcrUtilities->createBlockID($this->blocks[$key]['render_array'])) . '</td>';
       $tmp = $this->blocks[$key]['render_array'];
-      $this->getRenderer()->renderRoot($tmp);
+      $this->renderer->renderRoot($tmp);
       $region_metadata = BubbleableMetadata::createFromRenderArray($tmp);
       $debug .= '<td>' . $this->wcrUtilities->createBlockID($tmp) . '</td>';
       $debug .= '</td> ';
@@ -63,11 +70,9 @@ class BlockList extends HTMLMainContentFormatterBase {
   /**
    * @inheritdoc
    */
-  public function handle(array $main_content, Request $request, RouteMatchInterface $route_match) {
-    $this->page = $this->preparePage($main_content, $request, $route_match);
-    $this->blocks = $this->getBlocks($this->page);
-
-    return $this->generateResponse();
+  public function generateResponse(array $page, array $options = []) {
+    $this->blocks = $this->getBlocks($page);
+    return $this->doGenerateResponse();
   }
 
 

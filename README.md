@@ -28,8 +28,8 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
    - Usage: add `?_wrapper_format=drupal_wcr&_wcr_mode=spf` to request URL.
 
 YOu can also create your own format via Plugin:
- - Implement [`HTMLMainContentFormatterInterface`](src/Plugin/wcr/HTMLMainContentFormatterInterface.php)
- - Annotate with `@HTMLMainContentFormatter`
+ - Implement [`RenderArrayFormatterInterface`](src/Plugin/wcr/RenderArrayFormatterInterface.php)
+ - Annotate with `@RenderArrayFormatter`
 
 ### Componentized Pages (CoPage)
 

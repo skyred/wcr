@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Contains \Drupal\wcr\Plugin\HTMLMainContentFormatter\BlockListRest.
+ * Contains \Drupal\wcr\Plugin\RenderArrayFormatter\BlockListRest.
  */
 
-namespace Drupal\wcr\Plugin\wcr\HTMLMainContentFormatter;
+namespace Drupal\wcr\Plugin\wcr\RenderArrayFormatter;
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\wcr\Plugin\HTMLMainContentFormatterBase;
+use Drupal\wcr\Plugin\RenderArrayFormatterBase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 /**
  * Returns a list of all blocks on the page.
  *
- * @HTMLMainContentFormatter(
+ * @RenderArrayFormatter(
  *   id = "blocklist_rest",
  *   name = @Translation("BlockList REST"),
  *   description = @Translation("Returns a list of block on the page in JSON format."),
