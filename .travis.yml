@@ -56,4 +56,4 @@ before_script:
   - drush runserver 127.0.0.1:8080 &
   - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
   - export PHPPATH="$(which php)"
-script: php core/scripts/run-tests.sh --php $PHPPATH --url http://127.0.0.1:8080 --module wcr
+script: php core/scripts/run-tests.sh --php $PHPPATH --dburl mysql://root:@127.0.0.1/drupal --url http://127.0.0.1:8080 --module wcr
