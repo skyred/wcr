@@ -18,8 +18,7 @@ mysql:
 
 before_install:
   - sudo apt-get update > /dev/null
-  - sudo apt-get install -y tree
-  - tree
+  - pecl install -f gd mbstring opcache pdo pdo_mysql pdo_pgsql zip
 
 install:
   - sudo apt-get install -y libpng12-dev libjpeg-dev libpq-dev git mysql-client-5.5 wget
@@ -38,14 +37,13 @@ install:
 before_script:
   # disable xdebug
   - phpenv config-rm xdebug.ini
-  - pecl install -f gd mbstring opcache pdo pdo_mysql pdo_pgsql zip
   # navigate out of module directory to prevent blown stack by recursive module lookup
   - cd ..
   - tree
 
   - mkdir drupal-test
   - cd drupal-test
-
+  - drush dl drupal-8 --dev --destination=./
 
   # create new site
   - mysql -e 'create database drupal;'
