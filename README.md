@@ -1,4 +1,6 @@
-# Web Components Renderer
+# Web Components Renderer 
+[![Build Status](https://travis-ci.org/ztl8702/wcr.svg?branch=8.x-1.x)](https://travis-ci.org/ztl8702/wcr)
+
 WCR is a collection of enhancements to Drupal 8 UX using Web Components.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
