@@ -39,7 +39,6 @@ before_script:
   - phpenv config-rm xdebug.ini
   # navigate out of module directory to prevent blown stack by recursive module lookup
   - cd ..
-  - tree
 
   - mkdir drupal-test
   - cd drupal-test
