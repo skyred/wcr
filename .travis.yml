@@ -50,7 +50,7 @@ before_script:
 
   # reference and enable travis_ci_drupal_module_example in build site
   - cp -rf ../../wcr ./modules
-  - drush --yes pm-enable wcr
+  - drush --yes pm-enable wcr simpletest
 
   # start a web server on port 8080, run in the background; wait for initialization
   - drush runserver 127.0.0.1:8080 &
