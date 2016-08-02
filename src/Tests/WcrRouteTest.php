@@ -18,7 +18,7 @@ class WcrRouteTest extends WcrTestBase  {
                                  ],
                                 ]);
     $this->assertResponse(200);
-    $this->assertRaw('<table>', 'A table is present in the output.');
+   // $this->assertRaw('<table>', 'A table is present in the output.');
 
 
   }
