@@ -32,13 +32,13 @@ install:
   - composer global require drush/drush:8.*
   # install drupal console
   - curl http://drupalconsole.com/installer -L -o drupal.phar
-  - mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
-  - drupal init
+  - sudo mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
+  - sudo drupal init
 
 before_script:
   # disable xdebug
   - phpenv config-rm xdebug.ini
-  - sudo pecl install -f gd mbstring opcache pdo pdo_mysql pdo_pgsql zip
+  - pecl install -f gd mbstring opcache pdo pdo_mysql pdo_pgsql zip
   # navigate out of module directory to prevent blown stack by recursive module lookup
   - cd ..
   - tree
