@@ -7,28 +7,19 @@ use Drupal\simpletest\WebTestBase;
 /**
  * @group wcr
  */
-class WcrRouteTest extends WebTestBase {
-  private $user;
-
-  public function setUp() {
-    parent::setUp();
-    $this->user = $this->drupalCreateUser(array('access content'));
-    printf("debug %s",  print_r($this->user, true));
-  }
+class WcrRouteTest extends WcrTestBase  {
 
   public function testFrontpageBlockList() {
-    //$this->user = $this->drupalCreateUser(array('administer content'));
-    //$this->drupalLogin($this->user);
-    $out = $this->drupalGet('', [
+    $this->drupalLogin($this->user);
+    $this->drupalGet('', [
                                  'query' => [
                                     '_wrapper_format' =>'drupal_wcr',
                                     '_wcr_mode' => 'list',
                                  ],
                                 ]);
-
-    printf("%s", $out);
-
     $this->assertResponse(200);
+    $this->assertRaw('<table>', 'A table is present in the output.');
+
 
   }
 }
