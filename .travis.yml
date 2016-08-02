@@ -12,16 +12,20 @@ matrix:
     - php: hhvm
 
 mysql:
-  database: travis_ci_drupal_module_example_test
+  database: drupal
   username: root
   encoding: utf8
 
 before_install:
   - sudo apt-get update > /dev/null
+  - sudo apt-get install -y tree
+  - tree
 
 install:
-  # install php packages required for running a web server from drush on php 5.3
-  - sudo apt-get install -y --force-yes php-cgi php-mysql
+  - sudo apt-get install -y libpng12-dev libjpeg-dev libpq-dev git mysql-client-5.5 wget
+  - rm -rf /var/lib/apt/lists/*
+  - sudo pecl install -f gd mbstring opcache pdo pdo_mysql pdo_pgsql zip
+
 
   # add composer's global bin directory to the path
   # see: https://github.com/drush-ops/drush#install---composer
@@ -29,6 +33,10 @@ install:
 
   # install drush globally
   - composer global require drush/drush:8.*
+  # install drupal console
+  - curl http://drupalconsole.com/installer -L -o drupal.phar
+  - mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
+  - drupal init
 
 before_script:
   # disable xdebug
@@ -36,9 +44,9 @@ before_script:
   # navigate out of module directory to prevent blown stack by recursive module lookup
   - cd ../..
 
-  # create new site, stubbing sendmail path with true to prevent delivery errors and manually resolving drush path
-  - mysql -e 'create database travis_ci_drupal_module_example_test'
-  - php -d sendmail_path=`which true` ~/.composer/vendor/bin/drush.php --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/travis_ci_drupal_module_example_test --enable=simpletest travis_ci_drupal_module_example_test
+  # create new site
+  - mysql -e 'create database drupal;'
+  - drush --verbose site-install --db-url=mysql://root:@127.0.0.1/drupal --yes
 
   # reference and enable travis_ci_drupal_module_example in build site
   - ln -s $(readlink -e $(cd -)) travis_ci_drupal_module_example_test/drupal/modules/wcr
