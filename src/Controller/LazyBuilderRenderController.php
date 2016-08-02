@@ -2,7 +2,7 @@
 
 namespace Drupal\wcr\Controller;
 
-use Drupal\wcr\Plugin\wcr\RenderArrayFormatter\PagePreparationTrait;
+use Drupal\wcr\PagePreparationTrait;
 use \Symfony\Component\HttpFoundation\Response;
 use Exception;
 
