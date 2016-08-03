@@ -1,0 +1,12 @@
+BlockExporter:
+  version: "0.1.0"
+  js:
+    js/BlockExporter.js: {}
+  css:
+    theme:
+      css/dialog.css: {}
+  dependencies:
+    - core/jquery
+    - core/backbone
+    - core/drupal
+    - core/drupalSettings

@@ -48,12 +48,13 @@ before_script:
   - mysql -e 'create database drupal;'
   - drush --verbose site-install --db-url=mysql://root:@127.0.0.1/drupal --yes
 
-  # reference and enable travis_ci_drupal_module_example in build site
+  # copy the module to the build site
   - cp -rf ../../wcr ./modules
   - drush --yes pm-enable wcr simpletest
 
   # start a web server on port 8080, run in the background; wait for initialization
   - drush runserver 127.0.0.1:8080 &
   - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
+  # set PHPPATH for later use
   - export PHPPATH="$(which php)"
 script: php core/scripts/run-tests.sh --verbose --php $PHPPATH --dburl mysql://root:@127.0.0.1/drupal --url http://127.0.0.1:8080 --module wcr

@@ -1,0 +1,11 @@
+<?php
+
+function block_export_ui_page_attachments(array &$page) {
+  $page['#attached']['library'][] = 'block_export_ui/BlockExporter';
+}
+
+function block_export_ui_page_top(array &$page) {
+  $page['page_top']['wcrExport'] = array(
+    '#markup'=> '<div id="wcrExportDialog"></div>',
+  );
+}
