@@ -10,3 +10,11 @@ BlockExporter:
     - core/backbone
     - core/drupal
     - core/drupalSettings
+    - block_export_ui/jquery.deparam
+
+jquery.deparam:
+  version: "0.1.0"
+  js:
+    js/vendor/jquery-deparam.js: {}
+  dependencies:
+    - core/jquery

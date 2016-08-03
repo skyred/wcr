@@ -5,5 +5,21 @@
     top:64px;
     left:23px;
     z-index: 101;
-    display: block;
+    display:block;
+}
+
+#wcrExportDialog.hidden {
+    display:none;
+}
+
+#wcrExportDialog .ui-dialog-titlebar {
+    height:20px;
+}
+
+#wcrExportDialog .ui-dialog-content {
+    width: auto;
+    min-height: 43px;
+    max-height: 796px;
+    height: auto;
+    overflow: hidden;
 }

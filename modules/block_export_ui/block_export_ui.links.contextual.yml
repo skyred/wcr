@@ -1,0 +1,4 @@
+block_export:
+  title: 'Export this block'
+  route_name: 'block_export_ui.pseudo_link'
+  group: 'block'

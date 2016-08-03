@@ -1,0 +1,7 @@
+block_export_ui.pseudo_link:
+  path: '/block-export/pseudo-link'
+  defaults:
+    _title: 'Export this block'
+    _controller: '\Drupal\block_export_ui\Controller\PseudoController::handle'
+  requirements:
+    _access: 'TRUE'
