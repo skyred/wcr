@@ -46,13 +46,15 @@ class BlockList extends RenderArrayFormatterBase {
     $debug = '<table>';
 
     $debug .= '<tr>'
-             .'<td>key</td>'
+             .'<td>Region</td>'
+             .'<td>BlockName</td>'
              .'<td>hash</td>'
              .'<td>blockID</td>'
              .'</tr>';
     $keys = array_keys($this->blocks);
     foreach ($keys as $key) {
       $debug .= '<tr>';
+      $debug .= '<td>' . $this->blocks[$key]['region'] . '</td>';
       $debug .= '<td>' . $key . '</td>';
       $debug .= '<td>' . Utilities::hash($this->wcrUtilities->createBlockID($this->blocks[$key]['render_array'])) . '</td>';
       $tmp = $this->blocks[$key]['render_array'];

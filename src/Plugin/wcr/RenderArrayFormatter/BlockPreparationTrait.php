@@ -32,8 +32,9 @@ trait BlockPreparationTrait {
             if ($key == 'polymer_content' || $key == 'polymer_page_title') { //TODO remove
               $child['#cache']['contexts'] = array_merge($child['#cache']['contexts'], ['route']);
             }
-            $blocks[$region . '/' . $key] = array(
-              "id" => $region . '/' . $key,
+            $blocks[$key] = array(
+              "id" => $key,
+              "region" => $region,
               "render_array" => $child,
             );
           }

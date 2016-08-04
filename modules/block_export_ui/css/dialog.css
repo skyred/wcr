@@ -1,11 +1,19 @@
 #wcrExportDialog {
-    position:fixed;
+    /*position:fixed;*/
     height: auto;
     width: 75%;
-    top:64px;
-    left:23px;
+    /*top:64px;
+    margin: 0 auto;*/
     z-index: 101;
     display:block;
+}
+
+@media (max-width: 48em) {
+    #wcrExportDialog {
+        min-width: 92%;
+        max-width: 92%;
+    }
+
 }
 
 #wcrExportDialog.hidden {
@@ -13,13 +21,31 @@
 }
 
 #wcrExportDialog .ui-dialog-titlebar {
-    height:20px;
+    min-height:30px;
 }
 
 #wcrExportDialog .ui-dialog-content {
-    width: auto;
+    width: 100%;
     min-height: 43px;
     max-height: 796px;
     height: auto;
     overflow: hidden;
+}
+
+#wcrExportDialog .ui-options {
+    background-color: #f3f4ee;
+    padding: 8px 13px;
+}
+
+#wcrExportDialog textarea {
+    width:100%;
+    min-height:100px;
+    height: auto;
+
+}
+#wcrExportDialog iframe {
+    width:100%;
+    min-height:200px;
+    height: auto;
+
 }

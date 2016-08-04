@@ -1,3 +1,13 @@
+UrlHelper:
+  version: "0.1.0"
+  js:
+    js/UrlHelper.js: {}
+  dependencies:
+    - core/drupalSettings
+    - core/drupal
+    - core/jquery
+
+
 BlockExporter:
   version: "0.1.0"
   js:
@@ -11,6 +21,7 @@ BlockExporter:
     - core/drupal
     - core/drupalSettings
     - block_export_ui/jquery.deparam
+    - block_export_ui/UrlHelper
 
 jquery.deparam:
   version: "0.1.0"

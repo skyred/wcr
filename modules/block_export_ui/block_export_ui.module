@@ -9,3 +9,21 @@ function block_export_ui_page_top(array &$page) {
     '#markup'=> '<div id="wcrExportDialog"></div>',
   );
 }
+
+function block_export_ui_module_implements_alter(&$implementations, $hook) {
+  // We need contextual links to appear on the main content block,
+  // however, they are removed by default,
+  // so we need to disable the hook that removes that contextual link.
+  // @see system_block_view_system_main_block_alter()
+  if ($hook == "block_view_system_main_block_alter") {
+    unset($implementations['system']);
+  }
+}
+
+function block_export_ui_block_view_system_main_block_alter(array &$build, $block) {
+  //$build["#contextual_links"]['block'] = 1;
+}
+
+function block_export_ui_block_view_system_menu_block_alter(array &$build, $block) {
+  //$build["#contextual_links"]['block'] = 1;$a=1;
+}
