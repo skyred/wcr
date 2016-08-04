@@ -9,6 +9,7 @@ WCR is a collection of enhancements to Drupal 8 UX using Web Components.
 
 - [Features](#features)
   - [Render a block or specfic parts of the page](#render-a-block-or-specfic-parts-of-the-page)
+  - [Block Exporting and Embedding](#block-exporting-and-embedding)
   - [Componentized Pages (CoPage)](#componentized-pages-copage)
 - [Roadmap](#roadmap)
 
@@ -32,6 +33,12 @@ Combined with ShadowDOM, this allows developers and users to export their Drupal
 YOu can also create your own format via Plugin:
  - Implement [`RenderArrayFormatterInterface`](src/Plugin/wcr/RenderArrayFormatterInterface.php)
  - Annotate with `@RenderArrayFormatter`
+
+### Block Exporting and Embedding
+
+Provides a UI helper for exporting a block on page, generating the code for embedding and providing preview.
+
+![Screen](.docs/blockexporter.gif)
 
 ### Componentized Pages (CoPage)
 
